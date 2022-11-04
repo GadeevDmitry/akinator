@@ -1,6 +1,8 @@
 #ifndef TREE_BINARY_H
 #define TREE_BINARY_H
 
+#include "../lib/stack/stack.h"
+
 const int SIZE_DATA = 100;
 const int SIZE_MODE =  10;
 
@@ -58,6 +60,10 @@ void mode_download      ();
 bool read_input_base    (const char *filename);
 bool update_node        (Tree_node *node,             const char *buff, const int buff_size, size_t *const pos);
 bool get_node_data      (char *s, const int max_size, const char *buff, const int buff_size, size_t *const pos);
+
+void mode_definition    ();
+bool Tree_definition_dfs(Tree_node *node, const char *term_to_find, stack *const tree_way);
+void print_definition   (stack *const tree_way, const char *term);
 
 bool yes_no             ();
 void tab                (FILE *const stream, int n);

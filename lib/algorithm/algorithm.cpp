@@ -141,10 +141,6 @@ void get_word(char *s, const int max_size, FILE *const stream)
     int  cnt = 0;
     for (cnt = 0; cnt < max_size - 1; ++cnt)
     {
-        //<<<<<<<<<<<<<<<<<<<<<<<
-        //fprintf(stderr, "DO\n");
-        //>>>>>>>>>>>>>>>>>>>>>>>
-
         int cur_char =  getc(stream);
         if (cur_char == EOF || isspace(cur_char))
         {

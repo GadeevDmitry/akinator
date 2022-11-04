@@ -8,6 +8,7 @@
 #include "../lib/graph_dump/graph_dump.h"
 #include "../lib/algorithm/algorithm.h"
 #include "../lib/read_write/read_write.h"
+#include "../lib/stack/stack.h"
 
 #include "tree_binary.h"
 
@@ -134,6 +135,8 @@ void mode_download()
             fprintf(stderr, "You message is incorrect. Please print one word with not more than %d characters.\n", SIZE_DATA);
             continue;
         }
+        if (!strcasecmp(filename, "exit")) exit(0)
+
         if (read_input_base(filename))
         {
             fprintf(stderr, "Parsing was successful. Choose the mode.\n");
@@ -267,6 +270,95 @@ bool get_node_data(char *s, const int max_size, const char *buff, const int buff
 
 /*_______________________________________________________________________________________________*/
 
+struct trip
+{
+    char *node_data;
+    bool        yes;
+};
+
+void mode_definition()
+{
+
+    fprintf(stderr, "Tell me the name of something you are interested in defining.\n");
+
+    char term[SIZE_DATA] = "";
+    
+    while (true)
+    {
+        get_line_stream(term, SIZE_DATA,  stdin);
+        if (!strcasecmp(term, "exit" )) exit(0)
+        if (!strcasecmp(term, "некто"))
+        {
+            fprintf(stderr, "Something unknown...\n");
+            return;
+        }
+
+        stack       tree_way;
+        stack_ctor(&tree_way, sizeof(trip));
+
+        if (Tree_definition_dfs(ROOT, term, &tree_way))
+        {
+            print_definition(&tree_way, term);
+            fprintf(stderr, "Choose the mode.\n");
+            return;
+        }
+        else
+        {
+            fprintf(stderr, "Can't find this term in my base. Try another name.\n");
+            continue;
+        }
+    }
+}
+
+bool Tree_definition_dfs(Tree_node *node, const char *term_to_find, stack *const tree_way)
+{
+    assert(node        );
+    assert(term_to_find);
+
+    if (node->left == nullptr)
+    {
+        if (!strcasecmp(node->data, term_to_find)) return true;
+        return false;
+    }
+
+    trip cur_trip = {node->data, true};
+    stack_push      (tree_way, &cur_trip);
+
+    if (Tree_definition_dfs(node->left , term_to_find, tree_way) == true) return true;
+
+    cur_trip = {node->data, false};
+    stack_pop (tree_way);
+    stack_push(tree_way, &cur_trip);
+
+    if (Tree_definition_dfs(node->right, term_to_find, tree_way) == true) return true;
+    
+    stack_pop(tree_way);
+    return false;
+}
+
+void print_definition(stack *const tree_way, const char *term)
+{
+    assert(tree_way);
+    assert(term    );
+
+    fprintf(stderr, "%s - ", term);
+
+    int size = tree_way->size;
+
+    for (int cnt = 0; cnt < size; ++cnt)
+    {
+        trip cur = *(trip *) ((char *) tree_way->data + sizeof(trip) * cnt);
+
+        if (cur.yes) fprintf(stderr, "%s"    , cur.node_data);
+        else         fprintf(stderr, "not %s", cur.node_data);
+
+        if (cnt != size - 1) fprintf(stderr, ", ");
+        else                 fprintf(stderr, ".\n");
+    }
+}
+
+/*_______________________________________________________________________________________________*/
+
 void save_data(Tree_node *node)
 {
     fprintf(stderr, "Tell me the name of file to save the data base in (or print \"-\" if you don't want to save it), before I stop the program.\n");
@@ -285,6 +377,7 @@ void save_data(Tree_node *node)
             fprintf(stderr, "Undefined name of file. Tell me another name\n");
             continue;
         }
+        if (!strcasecmp (filename, "exit")) exit(0)
         if (!strcmp("-", filename)) return;
 
         stream = fopen(filename, "w");
