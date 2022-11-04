@@ -22,15 +22,14 @@
             continue;                                                                                           \
         }
 
-const int SIZE_ANS = 20;
+#define exit(code)                                                                                              \
+        {                                                                                                       \
+            save_data(ROOT);                                                                                    \
+            exit     (code);                                                                                    \
+        }
 
-void Tree_dump_graph_make(const Tree_node *tree,    const char *call_file,
-                                                    const char *call_func,
-                                                    const int   call_line)
-{
-    assert(call_file);
-    assert(call_func);
-}
+const int SIZE_ANS = 20;
+extern Tree_node  *ROOT;
 
 /*_______________________________________________________________________________________________*/
 
@@ -70,7 +69,7 @@ void mode_guess(Tree_node *node)
         free(creature);
         free(difference);
 
-        fprintf(stderr, "Game over. Chose the mode.\n");
+        fprintf(stderr, "Game over. Choose the mode.\n");
         return;
     }
     if (print_quation(node)) node = node->left;
@@ -101,13 +100,13 @@ bool print_guess(const Tree_node *const node, char *const difference, char *cons
     {
         fprintf(stderr, "Who have you guessed?\n");    
     
-        get_line_stream(creature, SIZE_DATA, stdin);
-        if (!strcasecmp(creature, "exit")) exit(0);
+        get_line_stream(creature, SIZE_DATA, stdin)
+        if (!strcasecmp(creature, "exit")) exit(0)
     
         fprintf (stderr, "What the difference between \"%s\" and \"%s\"?\n", creature, node->data);
 
-        get_line_stream(difference, SIZE_DATA, stdin);
-        if (!strcasecmp(difference, "exit")) exit(0);
+        get_line_stream(difference, SIZE_DATA, stdin)
+        if (!strcasecmp(difference, "exit")) exit(0)
 
         return false;
     }
@@ -142,7 +141,7 @@ bool yes_no()
         }
         if (!strcasecmp("yes" , answer)) return true ;
         if (!strcasecmp("no"  , answer)) return false;
-        if (!strcasecmp("exit", answer)) exit(0);
+        if (!strcasecmp("exit", answer)) exit(0)
 
         fprintf(stderr, "Undefined answer. Print \"yes\" or \"no\"\n");
     }
@@ -313,10 +312,10 @@ void fill_output_file(Tree_node *node, FILE *const stream, int tab_shift)
         putc('\n', stream);
         fill_output_file(node->left , stream, tab_shift + 1);
         fill_output_file(node->right, stream, tab_shift + 1);
-    }
 
-    tab    (stream, tab_shift);
-    fprintf(stream, "}\n");
+        tab    (stream, tab_shift);
+        fprintf(stream, "}\n");
+    }
 }
 
 /*_______________________________________________________________________________________________*/

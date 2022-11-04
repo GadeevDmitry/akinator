@@ -126,6 +126,8 @@ void get_line(char *s, const int max_size, FILE *const stream)
         
         s[cnt] = cur_char;
     }
+    while (isspace(s[cnt - 1]) && cnt > 0)
+        --cnt;
     s[cnt] = '\0';
 }
 
@@ -205,6 +207,8 @@ void get_line(char *s, const int max_size, const char *buff, const int buff_size
         s[cnt] = buff[*pos];
         ++*pos;
     }
+    while (isspace(s[cnt - 1]) && cnt > 0)
+        --cnt;
     s[cnt] = '\0';
 }
 
