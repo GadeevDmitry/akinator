@@ -7,6 +7,9 @@ const int SIZE_MODE =  10;
 struct Tree_node
 {
     char data[SIZE_DATA];
+    
+    bool visit_left;
+    bool visit_right;
 
     Tree_node *prev;
     Tree_node *left;
@@ -16,6 +19,9 @@ struct Tree_node
 const Tree_node node_default =
 {
     "некто", // data
+
+    false  , // visit_left
+    false  , // visit_right
 
     nullptr, // prev
     nullptr, // left
@@ -39,20 +45,22 @@ enum MODE
 
 /*_____________________________________FUNCTION_DECLARATIONS_____________________________________*/
 
-void Tree_dump_graph_make(const Tree_node *tree,    const char *call_file,
-                                                    const char *call_func,
-                                                    const int   call_line);
+void ctor_tree_node     (Tree_node *node, Tree_node *prev, const char *node_data);
 
-bool print_guess         (const Tree_node *const node, char *const difference, char *const creature);
-bool print_quation       (const Tree_node *const node);
-bool yes_no              ();
+void mode_guess         (Tree_node *node);
+bool print_guess        (const Tree_node *const node, char *const difference, char *const creature);
+bool print_quation      (const Tree_node *const node);
 
-void save_data           (Tree_node *node);
-void fill_output_file    (Tree_node *node, FILE *const stream, int tab_shift);
-void parsing             (const char *filename);
-void tab                 (FILE *const stream, int n);
+void save_data          (Tree_node *node);
+void fill_output_file   (Tree_node *node, FILE *const stream, int tab_shift);
 
-void mode_guess          (Tree_node *const node);
+bool read_input_base    (Tree_node *root, const char *filename);
+bool update_node        (Tree_node *node,             const char *buff, const int buff_size, size_t *const pos);
+bool get_node_data      (char *s, const int max_size, const char *buff, const int buff_size, size_t *const pos);
+
+bool yes_no             ();
+void tab                (FILE *const stream, int n);
+
 /*_______________________________________________________________________________________________*/
 
 #endif //TREE_BINARY_H
