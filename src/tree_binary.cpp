@@ -46,6 +46,8 @@ void ctor_tree_node(Tree_node *node, Tree_node *prev, const char *node_data)
     memcpy(node->data, node_data, SIZE_DATA);
 }
 
+/*_______________________________________________________________________________________________*/
+
 void mode_guess(Tree_node *node)
 {
     assert(node);
@@ -77,8 +79,6 @@ void mode_guess(Tree_node *node)
 
     mode_guess(node);
 }
-
-/*_______________________________________________________________________________________________*/
 
 bool print_guess(const Tree_node *const node, char *const difference, char *const creature)
 {
@@ -124,105 +124,72 @@ bool print_quation(const Tree_node *const node)
 
 /*_______________________________________________________________________________________________*/
 
-bool yes_no()
+void mode_download()
 {
-    char answer[SIZE_ANS] = "";
+    fprintf(stderr, "Tell me the name of file to take the data base from.\n");
 
-    while (true)
-    {
-        get_word(answer, SIZE_ANS, stdin);
-
-        if (!is_empty_input_stream(stdin))
-        {
-            clear_input_stream(stdin);
-
-            fprintf(stderr, "Undefined answer. Print \"yes\" or \"no\"\n");
-            continue;
-        }
-        if (!strcasecmp("yes" , answer)) return true ;
-        if (!strcasecmp("no"  , answer)) return false;
-        if (!strcasecmp("exit", answer)) exit(0)
-
-        fprintf(stderr, "Undefined answer. Print \"yes\" or \"no\"\n");
-    }
-
-    return true;
-}
-
-/*_______________________________________________________________________________________________*/
-
-void save_data(Tree_node *node)
-{
-    fprintf(stderr, "Tell me the name of file to save the data base in (or print \"-\" if you don't want to save it), before I stop the program\n");
-
-    char filename[SIZE_DATA] =      "";
-    FILE  *stream            = nullptr;
+    char filename[SIZE_DATA] = "";
 
     while (true)
     {
         get_word(filename, SIZE_DATA, stdin);
-
         if (!is_empty_input_stream(stdin))
         {
             clear_input_stream(stdin);
 
-            fprintf(stderr, "Undefined name of file. Tell me another name\n");
+            fprintf(stderr, "You message is so long. Please print not more than %d characters.\n", SIZE_DATA);
             continue;
         }
-        if (!strcmp("-", filename)) return;
-
-        stream = fopen(filename, "w");
-
-        if (stream == nullptr)
+        if (read_input_base(filename))
         {
-            fprintf(stderr, "I can't open this file(. Tell me another name\n");
-            continue;
+            fprintf(stderr, "Parsing was successful. Choose the mode.\n");
+            return;
         }
-
-        fill_output_file(node, stream, 0);
-        fclose          (stream);
-        return;
-    }  
+    }
 }
-
-/*_______________________________________________________________________________________________*/
 
 #define wrong_file_fmt()                                                                        \
         {                                                                                       \
-        fprintf(stderr, "Wrong format of \"%s\"\n", filename);                                  \
+        fprintf(stderr, "Wrong format of \"%s\". Tell me another name.\n", filename);           \
+        free   (data_base);                                                                     \
         return false;                                                                           \
         }
 
-bool read_input_base(Tree_node *root, const char *filename)
+bool read_input_base(const char *filename)
 {
-    assert(root    );
     assert(filename);
 
     Tree_node *node = nullptr;
 
     size_t data_size = 0;
     size_t data_pos  = 0;
-    char  *data_base =  (char *) read_file(filename, &data_pos);
+    char  *data_base =  (char *) read_file(filename, &data_size);
     if    (data_base == nullptr)
     {
         fprintf(stderr, "I can't open this file(. Tell me another name\n");
         return false;
     }
 
-    while (!is_empty_input_buff(data_base, data_size, &data_pos))
+    skip_spaces(data_base, data_size, &data_pos);
+
+    while (data_base[data_pos] != '\0')
     {
         char c = data_base[data_pos++];
+
         if  (c == '}')
         {
-            if (node == nullptr) wrong_file_fmt();
+            if (node == nullptr) wrong_file_fmt()
 
             node->visit_left  = false;
             node->visit_right = false;
             node              = node->prev;
+
+            skip_spaces(data_base, data_size, &data_pos);
+            continue;
         }
         else if  (c == '{')
         {
-            if (node == nullptr) node = root;
+            if (node == nullptr) node = ROOT;
             else
             {
                 if (node->left == nullptr)
@@ -235,7 +202,7 @@ bool read_input_base(Tree_node *root, const char *filename)
                 }
                 if (node->visit_left)
                 {
-                    if (node->visit_right)  wrong_file_fmt();
+                    if (node->visit_right)  wrong_file_fmt()
 
                     node->visit_right = true;
                     node              = node->right;
@@ -247,13 +214,19 @@ bool read_input_base(Tree_node *root, const char *filename)
                 }
             }
         }
-        else wrong_file_fmt();
+        else wrong_file_fmt()
 
-        if (!update_node(node, data_base, data_size, &data_pos)) wrong_file_fmt();
+        if (!update_node(node, data_base, data_size, &data_pos)) wrong_file_fmt()
+
+        skip_spaces(data_base, data_size, &data_pos);
     }
 
-    if (node == nullptr) return true;
-    wrong_file_fmt();
+    if (node == nullptr)
+    {
+        free(data_base);
+        return true;
+    }
+    wrong_file_fmt()
 }
 
 #undef wrong_file_fmt
@@ -298,6 +271,43 @@ bool get_node_data(char *s, const int max_size, const char *buff, const int buff
     return ans;
 }
 
+/*_______________________________________________________________________________________________*/
+
+void save_data(Tree_node *node)
+{
+    fprintf(stderr, "Tell me the name of file to save the data base in (or print \"-\" if you don't want to save it), before I stop the program\n");
+
+    char filename[SIZE_DATA] =      "";
+    FILE  *stream            = nullptr;
+
+    while (true)
+    {
+        get_word(filename, SIZE_DATA, stdin);
+
+        if (!is_empty_input_stream(stdin))
+        {
+            clear_input_stream(stdin);
+
+            fprintf(stderr, "Undefined name of file. Tell me another name\n");
+            continue;
+        }
+        if (!strcmp("-", filename)) return;
+
+        stream = fopen(filename, "w");
+
+        if (stream == nullptr)
+        {
+            fprintf(stderr, "I can't open this file(. Tell me another name\n");
+            continue;
+        }
+
+        fill_output_file(node, stream, 0);
+        fclose          (stream);
+        fprintf         (stderr, "Writing was successful. Bye!\n");
+        return;
+    }  
+}
+
 void fill_output_file(Tree_node *node, FILE *const stream, int tab_shift)
 {
     assert(node  );
@@ -319,6 +329,31 @@ void fill_output_file(Tree_node *node, FILE *const stream, int tab_shift)
 }
 
 /*_______________________________________________________________________________________________*/
+
+bool yes_no()
+{
+    char answer[SIZE_ANS] = "";
+
+    while (true)
+    {
+        get_word(answer, SIZE_ANS, stdin);
+
+        if (!is_empty_input_stream(stdin))
+        {
+            clear_input_stream(stdin);
+
+            fprintf(stderr, "Undefined answer. Print \"yes\" or \"no\"\n");
+            continue;
+        }
+        if (!strcasecmp("yes" , answer)) return true ;
+        if (!strcasecmp("no"  , answer)) return false;
+        if (!strcasecmp("exit", answer)) exit(0)
+
+        fprintf(stderr, "Undefined answer. Print \"yes\" or \"no\"\n");
+    }
+
+    return true;
+}
 
 void tab(FILE *const stream, int n)
 {

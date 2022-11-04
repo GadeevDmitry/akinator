@@ -54,7 +54,8 @@ bool print_quation      (const Tree_node *const node);
 void save_data          (Tree_node *node);
 void fill_output_file   (Tree_node *node, FILE *const stream, int tab_shift);
 
-bool read_input_base    (Tree_node *root, const char *filename);
+void mode_download      ();
+bool read_input_base    (const char *filename);
 bool update_node        (Tree_node *node,             const char *buff, const int buff_size, size_t *const pos);
 bool get_node_data      (char *s, const int max_size, const char *buff, const int buff_size, size_t *const pos);
 
