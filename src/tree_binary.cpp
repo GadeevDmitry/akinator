@@ -22,12 +22,6 @@
             continue;                                                                                           \
         }
 
-#define exit(code)                                                                                              \
-        {                                                                                                       \
-            save_data(ROOT);                                                                                    \
-            exit     (code);                                                                                    \
-        }
-
 const int SIZE_ANS = 20;
 extern Tree_node  *ROOT;
 
@@ -137,7 +131,7 @@ void mode_download()
         {
             clear_input_stream(stdin);
 
-            fprintf(stderr, "You message is so long. Please print not more than %d characters.\n", SIZE_DATA);
+            fprintf(stderr, "You message is incorrect. Please print one word with not more than %d characters.\n", SIZE_DATA);
             continue;
         }
         if (read_input_base(filename))
@@ -275,7 +269,7 @@ bool get_node_data(char *s, const int max_size, const char *buff, const int buff
 
 void save_data(Tree_node *node)
 {
-    fprintf(stderr, "Tell me the name of file to save the data base in (or print \"-\" if you don't want to save it), before I stop the program\n");
+    fprintf(stderr, "Tell me the name of file to save the data base in (or print \"-\" if you don't want to save it), before I stop the program.\n");
 
     char filename[SIZE_DATA] =      "";
     FILE  *stream            = nullptr;
@@ -302,7 +296,7 @@ void save_data(Tree_node *node)
         }
 
         fill_output_file(node, stream, 0);
-        fclose          (stream);
+        fclose          (      stream   );
         fprintf         (stderr, "Writing was successful. Bye!\n");
         return;
     }  
@@ -361,3 +355,93 @@ void tab(FILE *const stream, int n)
 }
 
 /*_______________________________________________________________________________________________*/
+
+void Tree_dump(Tree_node *root)
+{
+    assert(root);
+
+    static int cur = 0;
+
+    char    dump_txt[graph_size_file] = "";
+    char    dump_png[graph_size_file] = "";
+
+    sprintf(dump_txt, "../dump_txt/Tree%d.txt", cur);
+    sprintf(dump_png, "../dump_png/Tree%d.png", cur);
+
+    FILE *stream_txt =  fopen(dump_txt, "w");
+    if   (stream_txt == nullptr)
+    {
+        fprintf(stderr, "Can't open the dump_txt file\n");
+        return;
+    }
+
+    setvbuf(stream_txt, nullptr, _IONBF, 0);
+    fprintf(stream_txt, "digraph {\n"
+                        "splines=ortho\n"
+                        "node[shape=record, style=\"rounded, filled\", fontsize=8]\n");
+    
+    int node_number = 0;
+    Tree_dump_dfs(root, &node_number, stream_txt);
+
+    fprintf(stream_txt, "}\n");
+
+    char cmd[graph_size_cmd] = "";
+    sprintf    (cmd, "dot %s -T png -o %s", dump_txt, dump_png);
+    system     (cmd);
+    log_message("<img src=%s>\n", dump_png);
+
+    fclose(stream_txt);
+
+    fprintf(stderr, "Tree dumping was successful. Choose the mode.\n");
+}
+
+void Tree_dump_dfs(Tree_node *node, int *const node_number, FILE *const stream)
+{
+    assert(node);
+    assert(stream);
+
+    int number_cur =  *node_number;
+    Tree_node_describe(node, node_number, stream);
+
+    if (node->left == nullptr) return;
+
+    int number_left = *node_number;
+    Tree_dump_dfs(node->left, node_number, stream);
+
+    int number_right = *node_number;
+    Tree_dump_dfs(node->right, node_number, stream);
+
+    fprintf(stream, "node%d->node%d[xlabel=\"Yes\", color=\"black\"]\n", number_cur, number_left);
+    fprintf(stream, "node%d->node%d[xlabel=\"No \", color=\"black\"]\n", number_cur, number_right);
+}
+
+void Tree_node_describe(Tree_node *node, int *const node_number, FILE *const stream)
+{
+    assert(node);
+    assert(stream);
+
+    GRAPHVIZ_COLOR fillcolor = WHITE;
+    GRAPHVIZ_COLOR     color = WHITE;
+
+    if (node->left == nullptr)
+    {
+        fillcolor = LIGHT_BLUE;
+            color =  DARK_BLUE;
+    }
+    else
+    {
+        fillcolor = LIGHT_GREEN;
+            color =  DARK_GREEN;
+    }
+
+    fprintf(stream, "node%d[color=\"%s\", fillcolor=\"%s\", label=\"{cur=%p\\n | prev = %p\\n | %s\\n | {left=%p | right=%p}}\"]\n",
+                    *node_number,
+                                    graphviz_color_names[color],
+                                                      graphviz_color_names[fillcolor],
+                                                                       node,
+                                                                                      node->prev,
+                                                                                              node->data,
+                                                                                                            node->left,
+                                                                                                                       node->right);
+    ++*node_number;
+}

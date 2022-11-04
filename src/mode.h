@@ -1,3 +1,5 @@
 MODE(UNDEFINED, 0, {break;                  })
-MODE(GUESS    , 1, {mode_guess(ROOT);       })
+MODE(GUESS    , 1, {mode_guess   (ROOT);    })
 MODE(DOWNLOAD , 2, {mode_download();        })
+MODE(EXIT     , 3, {exit         (0)        })
+MODE(DUMP     , 4, {Tree_dump    (ROOT);    })

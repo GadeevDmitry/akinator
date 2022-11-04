@@ -1,10 +1,12 @@
 #ifndef GRAPH_DUMP_H
 #define GRAPH_DUMP_H
 
-static const char *grphviz_color_names[]   =
+static const int   graph_size_file = 100;
+static const int   graph_size_cmd  = 300;
+
+static const char *graphviz_color_names[]   =
 {
     "lightblue"     ,
-    "lightred"      ,
     "lightgreen"    ,
     "lightgrey"     ,
 
@@ -19,7 +21,6 @@ static const char *grphviz_color_names[]   =
 enum GRAPHVIZ_COLOR
 {
     LIGHT_BLUE      ,
-    LIGHT_RED       ,
     LIGHT_GREEN     ,
     LIGHT_GREY      ,
 
@@ -30,20 +31,5 @@ enum GRAPHVIZ_COLOR
     WHITE           ,
     BLACK
 };
-
-/*____________________________FUNCTION_DECLARATION____________________________*/
-
-void dump_graph_main(const  void  *var,
-
-                            void (*dump_simple)     (const void *,  const char *,
-                                                                    const char *,
-                                                                    const int   ),
-                            void (*dump_graph_make) (const void *, FILE *const  ),
-
-                     const  char *call_file,
-                     const  char *call_func,
-                     const  char *call_line);
-                     
-/*____________________________________________________________________________*/
 
 #endif //GRAPH_DUMP_H

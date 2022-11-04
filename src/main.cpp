@@ -20,8 +20,8 @@ int main()
    *ROOT = node_default;
 
     fprintf(stderr, "Hello, I am akinator!\n"
-                    "Chose the mode of the game\n"
-                    "Print \"help\" to get manual\n");
+                    "Chose the mode of the game.\n"
+                    "Print \"help\" to get manual.\n");
 
     while (true)
     {

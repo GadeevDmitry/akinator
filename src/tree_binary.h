@@ -62,6 +62,16 @@ bool get_node_data      (char *s, const int max_size, const char *buff, const in
 bool yes_no             ();
 void tab                (FILE *const stream, int n);
 
+void Tree_dump          (Tree_node *root);
+void Tree_dump_dfs      (Tree_node *node, int *const node_number, FILE *const stream);
+void Tree_node_describe (Tree_node *node, int *const node_number, FILE *const stream);
+
 /*_______________________________________________________________________________________________*/
+
+#define exit(code)                                                                                              \
+        {                                                                                                       \
+            save_data(ROOT);                                                                                    \
+            exit     (code);                                                                                    \
+        }
 
 #endif //TREE_BINARY_H
