@@ -4,14 +4,14 @@
 
 #include "../lib/algorithm/algorithm.h"
 
-#include "tree_binary.h"
+#include "akinator.h"
 
 Tree_node *ROOT = nullptr;
 
 /*______________________FUNCTION_DECLARATION______________________*/
 
-MODE get_mode();
-
+MODE get_mode ();
+void mode_help();
 /*________________________________________________________________*/
 
 int main()
@@ -19,19 +19,19 @@ int main()
     ROOT = (Tree_node *) calloc(1, sizeof(Tree_node));
    *ROOT = node_default;
 
-    fprintf(stderr, "Hello, I am akinator!\n"
-                    "Chose the mode of the game.\n"
-                    "Print \"help\" to get manual.\n");
+    fprintf_with_voice(stderr, "Hello, I am akinator!\n"
+                               "Chose the mode of the game.\n"
+                               "Print \"help\" to get manual.\n");
 
     while (true)
     {
         MODE mode = get_mode();
 
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        #define MODE(name, num, code)   \
-                case MODE_##name:       \
-                    code                \
-                    break;              \
+        #define MODE(name, num, code, ...)  \
+                case MODE_##name:           \
+                    code                    \
+                    break;
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         switch (mode)
@@ -47,7 +47,7 @@ int main()
         {                                   \
             clear_input_stream(stdin);      \
             return MODE_##name;             \
-        }                                   \
+        }
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 MODE get_mode()
@@ -60,14 +60,24 @@ MODE get_mode()
     {
         clear_input_stream(stdin);
 
-        fprintf(stderr, "Undefined mode. Print \"help\" to get manual.\n");
+        fprintf_with_voice(stderr, "Undefined mode. Print \"help\" to get manual.\n");
         return MODE_UNDEFINED;
     }
 
     #include "mode.h"
 
-    fprintf(stderr, "Undefined mode. Print \"help\" to get manual.\n");
+    fprintf_with_voice(stderr, "Undefined mode. Print \"help\" to get manual.\n");
     return MODE_UNDEFINED;
+}
+
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#define MODE(name, num, code, description)  \
+        fprintf(stderr, "%-15s - %s\n", #name, description);
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+void mode_help()
+{
+    #include "mode.h"
 }
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

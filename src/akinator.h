@@ -1,10 +1,13 @@
 #ifndef TREE_BINARY_H
 #define TREE_BINARY_H
 
+#define VOICE_MODE
+
 #include "../lib/stack/stack.h"
 
 const int SIZE_DATA = 100;
 const int SIZE_MODE =  10;
+const int SIZE_CMD  = 200;
 
 struct Tree_node
 {
@@ -71,6 +74,8 @@ void print_difference   (stack *const tree_way, int cnt, const int size);
 
 bool yes_no             ();
 void tab                (FILE *const stream, int n);
+void fprintf_with_voice (FILE *const stream, const char *fmt, ...);
+void voice              (const char *s);
 
 void Tree_dump          (Tree_node *root);
 void Tree_dump_dfs      (Tree_node *node, int *const node_number, FILE *const stream);

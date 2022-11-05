@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdarg.h>
 
 #include "../lib/logs/log.h"
 #include "../lib/graph_dump/graph_dump.h"
@@ -10,7 +11,7 @@
 #include "../lib/read_write/read_write.h"
 #include "../lib/stack/stack.h"
 
-#include "tree_binary.h"
+#include "akinator.h"
 
 #define get_line_stream(s, max_size, stream)                                                                    \
         get_line       (s, max_size, stream);                                                                   \
@@ -66,7 +67,8 @@ void mode_guess(Tree_node *node)
         free(creature);
         free(difference);
 
-        fprintf(stderr, "Game over. Choose the mode.\n");
+        fprintf_with_voice(stderr, "Game over. Choose the mode.\n");
+
         return;
     }
     if (print_quation(node)) node = node->left;
@@ -81,24 +83,24 @@ bool print_guess(const Tree_node *const node, char *const difference, char *cons
     assert(difference);
     assert(creature  );
 
-    fprintf(stderr, "Is \"%s\" your guess?\n", node->data);
+    fprintf_with_voice(stderr, "Is \"%s\" your guess?\n", node->data);
 
     bool ans = yes_no();
 
     if  (ans)
     {
-        fprintf(stderr, "It was very easy)\n");
+        fprintf_with_voice(stderr, "It was very easy)\n");
         return true;
     }
 
     while (true)
     {
-        fprintf(stderr, "Who have you guessed?\n");    
-    
+        fprintf_with_voice(stderr, "Who have you guessed?\n");    
+
         get_line_stream(creature, SIZE_DATA, stdin)
         if (!strcasecmp(creature, "exit")) exit(0)
-    
-        fprintf (stderr, "What the difference between \"%s\" and \"%s\"?\n", creature, node->data);
+
+        fprintf_with_voice(stderr, "What the difference between \"%s\" and \"%s\"?\n", creature, node->data);
 
         get_line_stream(difference, SIZE_DATA, stdin)
         if (!strcasecmp(difference, "exit")) exit(0)
@@ -113,7 +115,7 @@ bool print_quation(const Tree_node *const node)
 {
     assert(node);
 
-    fprintf(stderr, "Is your character %s?\n", node->data);
+    fprintf_with_voice(stderr, "Is your character %s?\n", node->data);
     return yes_no();
 }
 
@@ -121,7 +123,7 @@ bool print_quation(const Tree_node *const node)
 
 void mode_download()
 {
-    fprintf(stderr, "Tell me the name of file to take the data base from.\n");
+    fprintf_with_voice(stderr, "Tell me the name of file to take the data base from.\n");
 
     char filename[SIZE_DATA] = "";
 
@@ -132,14 +134,14 @@ void mode_download()
         {
             clear_input_stream(stdin);
 
-            fprintf(stderr, "You message is incorrect. Please print one word with not more than %d characters.\n", SIZE_DATA);
+            fprintf_with_voice(stderr, "You message is incorrect. Please print one word with not more than %d characters.\n", SIZE_DATA);
             continue;
         }
         if (!strcasecmp(filename, "exit")) exit(0)
 
         if (read_input_base(filename))
         {
-            fprintf(stderr, "Parsing was successful. Choose the mode.\n");
+            fprintf_with_voice(stderr, "Parsing was successful. Choose the mode.\n");
             return;
         }
     }
@@ -147,7 +149,7 @@ void mode_download()
 
 #define wrong_file_fmt()                                                                        \
         {                                                                                       \
-        fprintf(stderr, "Wrong format of \"%s\". Tell me another name.\n", filename);           \
+        fprintf_with_voice(stderr, "Wrong format of \"%s\". Tell me another name.\n", filename);\
         free   (data_base);                                                                     \
         return false;                                                                           \
         }
@@ -163,7 +165,7 @@ bool read_input_base(const char *filename)
     char  *data_base =  (char *) read_file(filename, &data_size);
     if    (data_base == nullptr)
     {
-        fprintf(stderr, "I can't open this file(. Tell me another name\n");
+        fprintf_with_voice(stderr, "I can't open this file(. Tell me another name\n");
         return false;
     }
 
@@ -278,8 +280,7 @@ struct trip
 
 void mode_definition()
 {
-
-    fprintf(stderr, "Tell me the name of something you are interested in defining.\n");
+    fprintf_with_voice(stderr, "Tell me the name of something you are interested in defining.\n");
 
     char term[SIZE_DATA] = "";
     
@@ -293,15 +294,15 @@ void mode_definition()
 
         if (Tree_definition_dfs(ROOT, term, &tree_way))
         {
-            print_definition(&tree_way, term);
-            fprintf(stderr, "Choose the mode.\n");
+            print_definition  (&tree_way, term);
+            fprintf_with_voice(stderr, "Choose the mode.\n");
 
             stack_dtor(&tree_way);
             return;
         }
         else
         {
-            fprintf(stderr, "Can't find this term in my base. Try another name.\n");
+            fprintf_with_voice(stderr, "Can't find this term in my base. Tell me another name.\n");
             continue;
         }
     }
@@ -346,8 +347,8 @@ void print_definition(stack *const tree_way, const char *term)
     {
         trip cur = *(trip *) ((char *) tree_way->data + sizeof(trip) * cnt);
 
-        if (cur.yes) fprintf(stderr, "%s"    , cur.node_data);
-        else         fprintf(stderr, "not %s", cur.node_data);
+        if (cur.yes) fprintf_with_voice(stderr, "%s"    , cur.node_data);
+        else         fprintf_with_voice(stderr, "not %s", cur.node_data);
 
         if (cnt != size - 1) fprintf(stderr, ", ");
         else                 fprintf(stderr, ".\n");
@@ -358,7 +359,7 @@ void print_definition(stack *const tree_way, const char *term)
 
 void mode_compare()
 {
-    fprintf(stderr, "Tell me two things you want to compare.\n");
+    fprintf_with_voice(stderr, "Tell me two things you want to compare.\n");
 
     char term1[SIZE_DATA] = "";
     char term2[SIZE_DATA] = "";
@@ -377,17 +378,17 @@ void mode_compare()
 
         if (!Tree_definition_dfs(ROOT, term1, &tree_way1))
         {
-            fprintf(stderr, "Can't find first term in my base. Try another name.\n");
+            fprintf_with_voice(stderr, "Can't find first term in my base. Try another name.\n");
             continue;
         }
         if (!Tree_definition_dfs(ROOT, term2, &tree_way2))
         {
-            fprintf(stderr, "Can't find second term in my base. Try another name.\n");
+            fprintf_with_voice(stderr, "Can't find second term in my base. Try another name.\n");
             continue;
         }
 
-        print_compare(&tree_way1, term1, &tree_way2, term2);
-        fprintf(stderr, "Choose the mode.\n");
+        print_compare     (&tree_way1, term1, &tree_way2, term2);
+        fprintf_with_voice(stderr, "Choose the mode.\n");
 
         stack_dtor(&tree_way1);
         stack_dtor(&tree_way2);
@@ -419,31 +420,31 @@ void print_compare(stack *const tree_way1, const char *term1, stack *const tree_
             if (!same)
             {
                 same = true;
-                fprintf(stderr, "The %s and %s are both ", term1, term2);
+                fprintf_with_voice(stderr, "The %s and %s are both ", term1, term2);
             }
             else fprintf(stderr, ", ");
 
-            if (cur1.yes) fprintf(stderr, "%s"    , cur1.node_data);
-            else          fprintf(stderr, "not %s", cur2.node_data);
+            if (cur1.yes) fprintf_with_voice(stderr, "%s"    , cur1.node_data);
+            else          fprintf_with_voice(stderr, "not %s", cur2.node_data);
         }
         else break;
     }
 
     if (cnt1 < size1)
     {
-        fprintf(stderr, ", but %s also ", term1);
-        print_difference(tree_way1, cnt1, size1);
+        fprintf_with_voice(stderr, ", but %s also ", term1);
+        print_difference  (tree_way1, cnt1, size1);
 
         if (tree_way2->size)
         {
-            fprintf(stderr, ", and %s also ", term2);
-            print_difference(tree_way2, cnt2, size2);
+            fprintf_with_voice(stderr, ", and %s also ", term2);
+            print_difference  (tree_way2, cnt2, size2);
         }
     }
     else if (cnt2 < size2)
     {
-        fprintf(stderr, ", but %s also ", term2);
-        print_difference(tree_way2, cnt2, size2);
+        fprintf_with_voice(stderr, ", but %s also ", term2);
+        print_difference  (tree_way2, cnt2, size2);
     }
     fprintf(stderr, ".\n");
 }
@@ -456,8 +457,8 @@ void print_difference(stack *const tree_way, int cnt, const int size)
     {
         trip cur = *(trip *) ((char *) tree_way->data + cnt * sizeof(trip));
 
-        if (cur.yes) fprintf(stderr, "%s"    , cur.node_data);
-        else         fprintf(stderr, "not %s", cur.node_data);
+        if (cur.yes) fprintf_with_voice(stderr, "%s"    , cur.node_data);
+        else         fprintf_with_voice(stderr, "not %s", cur.node_data);
 
         if (cnt != size - 1) fprintf(stderr, ", ");
     }
@@ -468,6 +469,10 @@ void print_difference(stack *const tree_way, int cnt, const int size)
 void save_data(Tree_node *node)
 {
     fprintf(stderr, "Tell me the name of file to save the data base in (or print \"-\" if you don't want to save it), before I stop the program.\n");
+    
+    //>>>>>>>>>>>>>>>>
+    //fprintf(stderr, "return to save_data()\n");
+    //<<<<<<<<<<<<<<<<
 
     char filename[SIZE_DATA] =      "";
     FILE  *stream            = nullptr;
@@ -475,28 +480,28 @@ void save_data(Tree_node *node)
     while (true)
     {
         get_word(filename, SIZE_DATA, stdin);
+        
 
         if (!is_empty_input_stream(stdin))
         {
             clear_input_stream(stdin);
 
-            fprintf(stderr, "Undefined name of file. Tell me another name\n");
+            fprintf_with_voice(stderr, "Undefined name of file. Tell me another name\n");
             continue;
         }
-        if (!strcasecmp (filename, "exit")) exit(0)
         if (!strcmp("-", filename)) return;
 
         stream = fopen(filename, "w");
 
         if (stream == nullptr)
         {
-            fprintf(stderr, "I can't open this file(. Tell me another name\n");
+            fprintf_with_voice(stderr, "I can't open this file(. Tell me another name\n");
             continue;
         }
 
-        fill_output_file(node, stream, 0);
-        fclose          (      stream   );
-        fprintf         (stderr, "Writing was successful. Bye!\n");
+        fill_output_file  (node, stream, 0);
+        fclose            (      stream   );
+        fprintf_with_voice(stderr, "Writing was successful. Bye!\n");
         return;
     }  
 }
@@ -535,14 +540,14 @@ bool yes_no()
         {
             clear_input_stream(stdin);
 
-            fprintf(stderr, "Undefined answer. Print \"yes\" or \"no\"\n");
+            fprintf_with_voice(stderr, "Undefined answer. Print \"yes\" or \"no\"\n");
             continue;
         }
         if (!strcasecmp("yes" , answer)) return true ;
         if (!strcasecmp("no"  , answer)) return false;
         if (!strcasecmp("exit", answer)) exit(0)
 
-        fprintf(stderr, "Undefined answer. Print \"yes\" or \"no\"\n");
+        fprintf_with_voice(stderr, "Undefined answer. Print \"yes\" or \"no\"\n");
     }
 
     return true;
@@ -551,6 +556,40 @@ bool yes_no()
 void tab(FILE *const stream, int n)
 {
     while (n--) putc('\t', stream);
+}
+
+void fprintf_with_voice(FILE *const stream, const char *fmt, ...)
+{
+    va_list  ap;
+    va_start(ap, fmt);
+
+    char     output[SIZE_DATA] = "";
+    vsprintf(output, fmt, ap);
+
+    fprintf(stream, output);
+    voice  (        output);
+    
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    //fprintf(stderr, "return to fprintf_with_voice()\n");
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    
+    va_end(ap);
+}
+
+void voice(const char *s)
+{
+    assert(s);
+
+    char    cmd[SIZE_CMD] = "";
+    sprintf(cmd, "echo \"%s\" | festival --tts", s);
+
+    for (int cnt = 0; cnt < SIZE_CMD; ++cnt) if (cmd[cnt] == '\n') cmd[cnt] = ' ';
+
+    system(cmd);
+
+    //>>>>>>>>>>>>>
+    //fprintf(stderr, "make voice\n");
+    //<<<<<<<<<<<<<
 }
 
 /*_______________________________________________________________________________________________*/
