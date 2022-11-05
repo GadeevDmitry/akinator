@@ -20,7 +20,7 @@ int main()
    *ROOT = node_default;
 
     fprintf_with_voice(stderr, "Hello, I am akinator!\n"
-                               "Chose the mode of the game.\n"
+                               "Choose the mode of the game.\n"
                                "Print \"help\" to get manual.\n");
 
     while (true)

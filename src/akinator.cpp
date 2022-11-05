@@ -13,15 +13,15 @@
 
 #include "akinator.h"
 
-#define get_line_stream(s, max_size, stream)                                                                    \
-        get_line       (s, max_size, stream);                                                                   \
-                                                                                                                \
-        if (!is_empty_input_stream(stream))                                                                     \
-        {                                                                                                       \
-            clear_input_stream(stream);                                                                         \
-                                                                                                                \
-            fprintf(stderr, "You message is so long. Please print not more than %d characters.\n", SIZE_DATA);  \
-            continue;                                                                                           \
+#define get_line_stream(s, max_size, stream)                                                                                \
+        get_line       (s, max_size, stream);                                                                               \
+                                                                                                                            \
+        if (!is_empty_input_stream(stream))                                                                                 \
+        {                                                                                                                   \
+            clear_input_stream(stream);                                                                                     \
+                                                                                                                            \
+            fprintf_with_voice(stderr, "You message is so long. Please print not more than %d characters.\n", SIZE_DATA);   \
+            continue;                                                                                                       \
         }
 
 const int SIZE_ANS = 20;
@@ -468,7 +468,7 @@ void print_difference(stack *const tree_way, int cnt, const int size)
 
 void save_data(Tree_node *node)
 {
-    fprintf(stderr, "Tell me the name of file to save the data base in (or print \"-\" if you don't want to save it), before I stop the program.\n");
+    fprintf_with_voice(stderr, "Tell me the name of file to save the data base in (or print \"-\" if you don't want to save it), before I stop the program.\n");
     
     //>>>>>>>>>>>>>>>>
     //fprintf(stderr, "return to save_data()\n");
@@ -560,20 +560,36 @@ void tab(FILE *const stream, int n)
 
 void fprintf_with_voice(FILE *const stream, const char *fmt, ...)
 {
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    fprintf(stderr, "I am in fprintf_with_voice()\n");
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
     va_list  ap;
     va_start(ap, fmt);
 
-    char     output[SIZE_DATA] = "";
-    vsprintf(output, fmt, ap);
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    fprintf(stderr, "Alreay after va_init\n");
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-    fprintf(stream, output);
-    voice  (        output);
+    char     output [SIZE_DATA] = "";
+
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    fprintf(stderr, "Already after char_init\n");
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    
+    //vsprintf(output, fmt, ap);
+
+    //fprintf(stderr, output);
+
+    //vfprintf(stream, fmt, ap);
+
+    //voice  (        output);
     
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //fprintf(stderr, "return to fprintf_with_voice()\n");
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     
-    va_end(ap);
+    //va_end(ap);
 }
 
 void voice(const char *s)
@@ -583,7 +599,12 @@ void voice(const char *s)
     char    cmd[SIZE_CMD] = "";
     sprintf(cmd, "echo \"%s\" | festival --tts", s);
 
-    for (int cnt = 0; cnt < SIZE_CMD; ++cnt) if (cmd[cnt] == '\n') cmd[cnt] = ' ';
+    for (int cnt = 0; cnt < SIZE_CMD; ++cnt)
+    {
+        if (!isalnum(cmd[cnt]) ||
+            cmd[cnt] == '\n' ) cmd[cnt] = ' ';
+    }
+    //fprintf(stderr, "%s\n", cmd);
 
     system(cmd);
 
