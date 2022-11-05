@@ -285,13 +285,8 @@ void mode_definition()
     
     while (true)
     {
-        get_line_stream(term, SIZE_DATA,  stdin);
+        get_line_stream(term, SIZE_DATA, stdin)
         if (!strcasecmp(term, "exit" )) exit(0)
-        if (!strcasecmp(term, "некто"))
-        {
-            fprintf(stderr, "Something unknown...\n");
-            return;
-        }
 
         stack       tree_way;
         stack_ctor(&tree_way, sizeof(trip));
@@ -300,6 +295,8 @@ void mode_definition()
         {
             print_definition(&tree_way, term);
             fprintf(stderr, "Choose the mode.\n");
+
+            stack_dtor(&tree_way);
             return;
         }
         else
@@ -354,6 +351,115 @@ void print_definition(stack *const tree_way, const char *term)
 
         if (cnt != size - 1) fprintf(stderr, ", ");
         else                 fprintf(stderr, ".\n");
+    }
+}
+
+/*_______________________________________________________________________________________________*/
+
+void mode_compare()
+{
+    fprintf(stderr, "Tell me two things you want to compare.\n");
+
+    char term1[SIZE_DATA] = "";
+    char term2[SIZE_DATA] = "";
+
+    while (true)
+    {
+        get_line_stream(term1, SIZE_DATA, stdin)
+        if (!strcasecmp(term1, "exit"))  exit(0)
+        get_line_stream(term2, SIZE_DATA, stdin)
+        if (!strcasecmp(term2, "exit"))  exit(0)
+
+        stack       tree_way1;
+        stack       tree_way2;
+        stack_ctor(&tree_way1, sizeof(trip));
+        stack_ctor(&tree_way2, sizeof(trip));
+
+        if (!Tree_definition_dfs(ROOT, term1, &tree_way1))
+        {
+            fprintf(stderr, "Can't find first term in my base. Try another name.\n");
+            continue;
+        }
+        if (!Tree_definition_dfs(ROOT, term2, &tree_way2))
+        {
+            fprintf(stderr, "Can't find second term in my base. Try another name.\n");
+            continue;
+        }
+
+        print_compare(&tree_way1, term1, &tree_way2, term2);
+        fprintf(stderr, "Choose the mode.\n");
+
+        stack_dtor(&tree_way1);
+        stack_dtor(&tree_way2);
+        return;
+    }
+}
+
+void print_compare(stack *const tree_way1, const char *term1, stack *const tree_way2, const char *term2)
+{
+    assert(tree_way1);
+    assert(term1    );
+    assert(tree_way2);
+    assert(term2    );
+
+    bool same = false;
+
+    int  cnt1 = 0;
+    int  cnt2 = 0;
+    int size1 = tree_way1->size;
+    int size2 = tree_way2->size;
+
+    for (; cnt1 < size1 && cnt2 < size2; ++cnt1, ++cnt2)
+    {
+        trip cur1 = *(trip *) ((char *) tree_way1->data + cnt2 * sizeof(trip));
+        trip cur2 = *(trip *) ((char *) tree_way2->data + cnt1 * sizeof(trip));
+
+        if (!strcasecmp(cur1.node_data, cur2.node_data) && cur1.yes == cur2.yes)
+        {
+            if (!same)
+            {
+                same = true;
+                fprintf(stderr, "The %s and %s are both ", term1, term2);
+            }
+            else fprintf(stderr, ", ");
+
+            if (cur1.yes) fprintf(stderr, "%s"    , cur1.node_data);
+            else          fprintf(stderr, "not %s", cur2.node_data);
+        }
+        else break;
+    }
+
+    if (cnt1 < size1)
+    {
+        fprintf(stderr, ", but %s also ", term1);
+        print_difference(tree_way1, cnt1, size1);
+
+        if (tree_way2->size)
+        {
+            fprintf(stderr, ", and %s also ", term2);
+            print_difference(tree_way2, cnt2, size2);
+        }
+    }
+    else if (cnt2 < size2)
+    {
+        fprintf(stderr, ", but %s also ", term2);
+        print_difference(tree_way2, cnt2, size2);
+    }
+    fprintf(stderr, ".\n");
+}
+
+void print_difference(stack *const tree_way, int cnt, const int size)
+{
+    assert(tree_way);
+
+    for (; cnt < size; ++cnt)
+    {
+        trip cur = *(trip *) ((char *) tree_way->data + cnt * sizeof(trip));
+
+        if (cur.yes) fprintf(stderr, "%s"    , cur.node_data);
+        else         fprintf(stderr, "not %s", cur.node_data);
+
+        if (cnt != size - 1) fprintf(stderr, ", ");
     }
 }
 
@@ -527,14 +633,14 @@ void Tree_node_describe(Tree_node *node, int *const node_number, FILE *const str
             color =  DARK_GREEN;
     }
 
-    fprintf(stream, "node%d[color=\"%s\", fillcolor=\"%s\", label=\"{cur=%p\\n | prev = %p\\n | %s\\n | {left=%p | right=%p}}\"]\n",
+    fprintf(stream, "node%d[color=\"%s\", fillcolor=\"%s\", label=\"{cur=%p\\n | prev = %p\\n | :%s:\\n | {left=%p | right=%p}}\"]\n",
                     *node_number,
                                     graphviz_color_names[color],
                                                       graphviz_color_names[fillcolor],
                                                                        node,
                                                                                       node->prev,
-                                                                                              node->data,
-                                                                                                            node->left,
-                                                                                                                       node->right);
+                                                                                                 node->data,
+                                                                                                                node->left,
+                                                                                                                           node->right);
     ++*node_number;
 }

@@ -65,6 +65,10 @@ void mode_definition    ();
 bool Tree_definition_dfs(Tree_node *node, const char *term_to_find, stack *const tree_way);
 void print_definition   (stack *const tree_way, const char *term);
 
+void mode_compare       ();
+void print_compare      (stack *const tree_way1, const char *term1, stack *const tree_way2, const char *term2);
+void print_difference   (stack *const tree_way, int cnt, const int size);
+
 bool yes_no             ();
 void tab                (FILE *const stream, int n);
 

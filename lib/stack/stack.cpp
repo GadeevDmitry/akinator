@@ -16,6 +16,14 @@ void stack_ctor(stack *const stk, const size_t el_size)
     stk->capacity = 4;
 }
 
+void stack_dtor(stack *const stk)
+{
+    assert(stk != nullptr);
+
+    free(stk->data);
+   *stk = {};
+}
+
 void stack_push(stack *const stk, const void *push_val)
 {
     assert(stk      != nullptr);
