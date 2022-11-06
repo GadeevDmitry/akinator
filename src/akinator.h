@@ -1,8 +1,6 @@
 #ifndef TREE_BINARY_H
 #define TREE_BINARY_H
 
-#define VOICE_MODE
-
 #include "../lib/stack/stack.h"
 
 const int SIZE_DATA =  500;
@@ -12,9 +10,6 @@ const int SIZE_CMD  = 1000;
 struct Tree_node
 {
     char data[SIZE_DATA];
-    
-    bool visit_left;
-    bool visit_right;
 
     Tree_node *prev;
     Tree_node *left;
@@ -24,9 +19,6 @@ struct Tree_node
 const Tree_node node_default =
 {
     "anything", // data
-
-    false     , // visit_left
-    false     , // visit_right
 
     nullptr   , // prev
     nullptr   , // left

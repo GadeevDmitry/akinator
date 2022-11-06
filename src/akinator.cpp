@@ -35,11 +35,9 @@ void ctor_tree_node(Tree_node *node, Tree_node *prev, const char *node_data)
 
    *node              = node_default;
     node->prev        = prev;
-    node->visit_left  = false;
-    node->visit_right = false;
 
     if    (node_data == nullptr) return;
-    
+
     int  cnt = 0;
     for (cnt = 0; cnt < SIZE_DATA - 1 && node_data[cnt]; ++cnt) node->data[cnt] = node_data[cnt];
 
@@ -177,10 +175,10 @@ bool read_input_base(const char *filename)
         if  (c == '}')
         {
             if (node == nullptr) wrong_file_fmt()
+            if (node->left != nullptr && node->right == nullptr ||
+                node->left == nullptr && node->right != nullptr)    wrong_file_fmt()
 
-            node->visit_left  = false;
-            node->visit_right = false;
-            node              = node->prev;
+            node = node->prev;
 
             skip_spaces(data_base, data_size, &data_pos);
             continue;
@@ -193,23 +191,16 @@ bool read_input_base(const char *filename)
                 if (node->left == nullptr)
                 {
                     node->left  = (Tree_node *) calloc(1, sizeof(Tree_node));
-                    node->right = (Tree_node *) calloc(1, sizeof(Tree_node));
-
                     ctor_tree_node(node->left , node, nullptr);
+                    node = node->left;
+                }
+                else if (node->right == nullptr)
+                {
+                    node->right = (Tree_node *) calloc(1, sizeof(Tree_node));
                     ctor_tree_node(node->right, node, nullptr);
+                    node = node->right;
                 }
-                if (node->visit_left)
-                {
-                    if (node->visit_right)  wrong_file_fmt()
-
-                    node->visit_right = true;
-                    node              = node->right;
-                }
-                else
-                {
-                    node->visit_left = true;
-                    node             = node->left;
-                }
+                else wrong_file_fmt()
             }
         }
         else wrong_file_fmt()
