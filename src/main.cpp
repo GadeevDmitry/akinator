@@ -6,7 +6,6 @@
 
 #include "akinator.h"
 
-Tree_node *ROOT = nullptr;
 
 /*______________________FUNCTION_DECLARATION______________________*/
 
@@ -16,7 +15,7 @@ void mode_help();
 
 int main()
 {
-    ROOT = (Tree_node *) calloc(1, sizeof(Tree_node));
+    Tree_node *ROOT = (Tree_node *) calloc(1, sizeof(Tree_node));
    *ROOT = node_default;
 
     fprintf_with_voice(stderr, "Hello, I am akinator!\n"

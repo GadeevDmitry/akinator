@@ -50,16 +50,16 @@ bool print_quation      (const Tree_node *const node);
 void save_data          (Tree_node *node);
 void fill_output_file   (Tree_node *node, FILE *const stream, int tab_shift);
 
-void mode_download      ();
-bool read_input_base    (const char *filename);
+void mode_download      (Tree_node *const ROOT);
+bool read_input_base    (Tree_node *const ROOT, const char *filename);
 bool update_node        (Tree_node *node,                   const char *buff, const int buff_size, size_t *const pos);
 bool get_node_data      (char *push_in, const int max_size, const char *buff, const int buff_size, size_t *const pos);
 
-void mode_definition    ();
+void mode_definition    (Tree_node *const ROOT);
 bool Tree_definition_dfs(Tree_node *node, const char *term_to_find, stack *const tree_way);
 void print_definition   (stack *const tree_way, const char *term);
 
-void mode_compare       ();
+void mode_compare       (Tree_node *const ROOT);
 void print_compare      (stack *const tree_way1, const char *term1, stack *const tree_way2, const char *term2);
 void print_difference   (stack *const tree_way, int cnt, const int size);
 

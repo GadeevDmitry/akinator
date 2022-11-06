@@ -25,7 +25,6 @@
         }
 
 const int SIZE_ANS = 20;
-extern Tree_node  *ROOT;
 
 /*_______________________________________________________________________________________________*/
 
@@ -119,8 +118,10 @@ bool print_quation(const Tree_node *const node)
 
 /*_______________________________________________________________________________________________*/
 
-void mode_download()
+void mode_download(Tree_node *const ROOT)
 {
+    assert(ROOT);
+
     fprintf_with_voice(stderr, "Tell me the name of file to take the data base from.\n");
 
     char filename[SIZE_DATA] = "";
@@ -136,7 +137,7 @@ void mode_download()
             continue;
         }
 
-        if (read_input_base(filename))
+        if (read_input_base(ROOT, filename))
         {
             fprintf_with_voice(stderr, "Parsing was successful. Choose the mode.\n");
             return;
@@ -151,8 +152,9 @@ void mode_download()
         return false;                                                                           \
         }
 
-bool read_input_base(const char *filename)
+bool read_input_base(Tree_node *const ROOT, const char *filename)
 {
+    assert(ROOT    );
     assert(filename);
 
     Tree_node *node = nullptr;
@@ -268,8 +270,10 @@ struct trip
     bool        yes;
 };
 
-void mode_definition()
+void mode_definition(Tree_node *const ROOT)
 {
+    assert(ROOT);
+
     fprintf_with_voice(stderr, "Tell me the name of something you are interested in defining.\n");
 
     char term[SIZE_DATA] = "";
@@ -346,8 +350,10 @@ void print_definition(stack *const tree_way, const char *term)
 
 /*_______________________________________________________________________________________________*/
 
-void mode_compare()
+void mode_compare(Tree_node *const ROOT)
 {
+    assert(ROOT);
+
     fprintf_with_voice(stderr, "Tell me two things you want to compare.\n");
 
     char term1[SIZE_DATA] = "";
