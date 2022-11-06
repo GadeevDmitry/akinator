@@ -20,7 +20,7 @@
         {                                                                                                                   \
             clear_input_stream(stream);                                                                                     \
                                                                                                                             \
-            fprintf_with_voice(stderr, "You message is so long. Please print not more than %d characters.\n", SIZE_DATA);   \
+            fprintf_with_voice(stderr, "Сообщение слишком длинное. Введи не более %d символов.\n", SIZE_DATA);              \
             continue;                                                                                                       \
         }
 
@@ -68,7 +68,7 @@ void mode_guess(Tree_node *node)
         free(creature);
         free(difference);
 
-        fprintf_with_voice(stderr, "Game over. Choose the mode.\n");
+        fprintf_with_voice(stderr, "Конец игры. Выбери режим.\n");
 
         return;
     }
@@ -84,22 +84,22 @@ bool print_guess(const Tree_node *const node, char *const difference, char *cons
     assert(difference);
     assert(creature  );
 
-    fprintf_with_voice(stderr, "Is \"%s\" your guess?\n", node->data);
+    fprintf_with_voice(stderr, "Ты загадал \"%s\"?\n", node->data);
 
     bool ans = yes_no();
 
     if  (ans)
     {
-        fprintf_with_voice(stderr, "It was very easy)\n");
+        fprintf_with_voice(stderr, "Это было проще простого)\n");
         return true;
     }
 
     while (true)
     {
-        fprintf_with_voice(stderr, "Who have you guessed?\n");    
+        fprintf_with_voice(stderr, "Кого ты загадал?\n");    
         get_line_stream(creature, SIZE_DATA, stdin)
 
-        fprintf_with_voice(stderr, "What the difference between \"%s\" and \"%s\"?\n", creature, node->data);
+        fprintf_with_voice(stderr, "В чём разница между \"%s\" и \"%s\"?\n", creature, node->data);
         get_line_stream(difference, SIZE_DATA, stdin)
 
         return false;
@@ -112,7 +112,7 @@ bool print_quation(const Tree_node *const node)
 {
     assert(node);
 
-    fprintf_with_voice(stderr, "Is your character %s?\n", node->data);
+    fprintf_with_voice(stderr, "Твой персонаж %s?\n", node->data);
     return yes_no();
 }
 
@@ -122,7 +122,7 @@ void mode_download(Tree_node *const ROOT)
 {
     assert(ROOT);
 
-    fprintf_with_voice(stderr, "Tell me the name of file to take the data base from.\n");
+    fprintf_with_voice(stderr, "Введи путь до файла, откуда взять базу.\n");
 
     char filename[SIZE_DATA] = "";
 
@@ -133,13 +133,13 @@ void mode_download(Tree_node *const ROOT)
         {
             clear_input_stream(stdin);
 
-            fprintf_with_voice(stderr, "You message is incorrect. Please print one word with not more than %d characters.\n", SIZE_DATA);
+            fprintf_with_voice(stderr, "Некорректный путь. Введи одно слово из не более,чем %d симаолов.\n", SIZE_DATA);
             continue;
         }
 
         if (read_input_base(ROOT, filename))
         {
-            fprintf_with_voice(stderr, "Parsing was successful. Choose the mode.\n");
+            fprintf_with_voice(stderr, "Парсинг произошёл успешно. Выбери режим.\n");
             return;
         }
     }
@@ -147,7 +147,7 @@ void mode_download(Tree_node *const ROOT)
 
 #define wrong_file_fmt()                                                                        \
         {                                                                                       \
-        fprintf_with_voice(stderr, "Wrong format of \"%s\". Tell me another name.\n", filename);\
+        fprintf_with_voice(stderr, "Неправильный формат \"%s\". Введи другое имя.\n", filename);\
         free   (data_base);                                                                     \
         return false;                                                                           \
         }
@@ -164,7 +164,7 @@ bool read_input_base(Tree_node *const ROOT, const char *filename)
     char  *data_base =  (char *) read_file(filename, &data_size);
     if    (data_base == nullptr)
     {
-        fprintf_with_voice(stderr, "I can't open this file(. Tell me another name\n");
+        fprintf_with_voice(stderr, "Не могу открыть файл. Введи другое имя.\n");
         return false;
     }
 
@@ -274,7 +274,7 @@ void mode_definition(Tree_node *const ROOT)
 {
     assert(ROOT);
 
-    fprintf_with_voice(stderr, "Tell me the name of something you are interested in defining.\n");
+    fprintf_with_voice(stderr, "Назови имя того, чьё определение тебя интересует.\n");
 
     char term[SIZE_DATA] = "";
     
@@ -288,14 +288,14 @@ void mode_definition(Tree_node *const ROOT)
         if (Tree_definition_dfs(ROOT, term, &tree_way))
         {
             print_definition  (&tree_way, term);
-            fprintf_with_voice(stderr, "Choose the mode.\n");
+            fprintf_with_voice(stderr, "Выбери режим.\n");
 
             stack_dtor(&tree_way);
             return;
         }
         else
         {
-            fprintf_with_voice(stderr, "Can't find this term in my base. Tell me another name.\n");
+            fprintf_with_voice(stderr, "Этого термина нет в базе. Назови другое имя.\n");
             continue;
         }
     }
@@ -341,7 +341,7 @@ void print_definition(stack *const tree_way, const char *term)
         trip cur = *(trip *) ((char *) tree_way->data + sizeof(trip) * cnt);
 
         if (cur.yes) fprintf_with_voice(stderr, "%s"    , cur.node_data);
-        else         fprintf_with_voice(stderr, "not %s", cur.node_data);
+        else         fprintf_with_voice(stderr, "не %s", cur.node_data);
 
         if (cnt != size - 1) fprintf(stderr, ", ");
         else                 fprintf(stderr, ".\n");
@@ -354,7 +354,7 @@ void mode_compare(Tree_node *const ROOT)
 {
     assert(ROOT);
 
-    fprintf_with_voice(stderr, "Tell me two things you want to compare.\n");
+    fprintf_with_voice(stderr, "Назови два имени, а я сравню их определения.\n");
 
     char term1[SIZE_DATA] = "";
     char term2[SIZE_DATA] = "";
@@ -371,17 +371,17 @@ void mode_compare(Tree_node *const ROOT)
 
         if (!Tree_definition_dfs(ROOT, term1, &tree_way1))
         {
-            fprintf_with_voice(stderr, "Can't find first term in my base. Try another name.\n");
+            fprintf_with_voice(stderr, "Первого термина нет в базе. Введи другое имя.\n");
             continue;
         }
         if (!Tree_definition_dfs(ROOT, term2, &tree_way2))
         {
-            fprintf_with_voice(stderr, "Can't find second term in my base. Try another name.\n");
+            fprintf_with_voice(stderr, "Второго термина нет в базе. Введи другое имя.\n");
             continue;
         }
 
         print_compare     (&tree_way1, term1, &tree_way2, term2);
-        fprintf_with_voice(stderr, "Choose the mode.\n");
+        fprintf_with_voice(stderr, "Выбери режим.\n");
 
         stack_dtor(&tree_way1);
         stack_dtor(&tree_way2);
@@ -416,30 +416,30 @@ void print_compare(stack *const tree_way1, const char *term1, stack *const tree_
             if (!same)
             {
                 same = true;
-                fprintf_with_voice(stderr, "The %s and %s are both ", term1, term2);
+                fprintf_with_voice(stderr, "\"%s\" и \"%s\" оба ", term1, term2);
             }
             else fprintf(stderr, ", ");
 
             if (cur1.yes) fprintf_with_voice(stderr, "%s"    , cur1.node_data);
-            else          fprintf_with_voice(stderr, "not %s", cur2.node_data);
+            else          fprintf_with_voice(stderr, "не %s", cur2.node_data);
         }
         else break;
     }
 
     if (cnt1 < size1)
     {
-        fprintf_with_voice(stderr, ", but %s also ", term1);
+        fprintf_with_voice(stderr, ", но \"%s\" также ", term1);
         print_difference  (tree_way1, cnt1, size1);
 
         if (tree_way2->size)
         {
-            fprintf_with_voice(stderr, ", and %s also ", term2);
+            fprintf_with_voice(stderr, ", a \"%s\" ещё и ", term2);
             print_difference  (tree_way2, cnt2, size2);
         }
     }
     else if (cnt2 < size2)
     {
-        fprintf_with_voice(stderr, ", but %s also ", term2);
+        fprintf_with_voice(stderr, ", но \"%s\" также ", term2);
         print_difference  (tree_way2, cnt2, size2);
     }
     fprintf(stderr, ".\n");
@@ -456,7 +456,7 @@ void print_difference(stack *const tree_way, int cnt, const int size)
         trip cur = beg[cnt];
 
         if (cur.yes) fprintf_with_voice(stderr, "%s"    , cur.node_data);
-        else         fprintf_with_voice(stderr, "not %s", cur.node_data);
+        else         fprintf_with_voice(stderr, "но %s", cur.node_data);
 
         if (cnt != size - 1) fprintf(stderr, ", ");
     }
@@ -466,7 +466,7 @@ void print_difference(stack *const tree_way, int cnt, const int size)
 
 void save_data(Tree_node *node)
 {
-    fprintf_with_voice(stderr, "Tell me the name of file to save the data base in (or print \"-\" if you don't want to save it), before I stop the program.\n");
+    fprintf_with_voice(stderr, "Введи путь до файла, в который сохранить базу(или введи \"-\", чтобы не сохранять её).\n");
     
     //>>>>>>>>>>>>>>>>
     //fprintf(stderr, "return to save_data()\n");
@@ -484,7 +484,7 @@ void save_data(Tree_node *node)
         {
             clear_input_stream(stdin);
 
-            fprintf_with_voice(stderr, "Undefined name of file. Tell me another name\n");
+            fprintf_with_voice(stderr, "Некорректное имя файла. Введи другое имя.\n");
             continue;
         }
         if (!strcmp("-", filename)) return;
@@ -493,13 +493,13 @@ void save_data(Tree_node *node)
 
         if (stream == nullptr)
         {
-            fprintf_with_voice(stderr, "I can't open this file(. Tell me another name\n");
+            fprintf_with_voice(stderr, "Не могу открыть этот файл(. Введи другое имя.\n");
             continue;
         }
 
         fill_output_file  (node, stream, 0);
         fclose            (      stream   );
-        fprintf_with_voice(stderr, "Writing was successful. Bye!\n");
+        fprintf_with_voice(stderr, "Запись произошла успешно. Пока!\n");
         return;
     }  
 }
@@ -538,13 +538,13 @@ bool yes_no()
         {
             clear_input_stream(stdin);
 
-            fprintf_with_voice(stderr, "Undefined answer. Print \"yes\" or \"no\"\n");
+            fprintf_with_voice(stderr, "Неопределённый ответ. Скажи \"да\" или \"нет\"\n");
             continue;
         }
-        if (!strcasecmp("yes" , answer)) return true ;
-        if (!strcasecmp("no"  , answer)) return false;
+        if (!strcasecmp("да" , answer)) return true ;
+        if (!strcasecmp("нет"  , answer)) return false;
 
-        fprintf_with_voice(stderr, "Undefined answer. Print \"yes\" or \"no\"\n");
+        fprintf_with_voice(stderr, "Неопределённый ответ. Скажи \"да\" или \"нет\"\n");
     }
 
     return true;
@@ -600,8 +600,12 @@ void voice(const char *s)
 
     for (int cnt = 0; cnt < SIZE_DATA && cmd_text[cnt]; ++cnt)
     {
-        if (!isalnum(cmd_text[cnt]) ||
-            cmd_text[cnt] == '\n' ) cmd_text[cnt] = ' ';
+        if (cmd_text[cnt] == '\n' ||
+            cmd_text[cnt] == '('  ||
+            cmd_text[cnt] == ')'  ||
+            cmd_text[cnt] == '-'  ||
+            cmd_text[cnt] == ','  ||
+            cmd_text[cnt] == '.')   cmd_text[cnt] = ' ';
     }
 
     sprintf(cmd,    "echo \"%s\" | festival --tts", cmd_text);
@@ -631,7 +635,7 @@ void Tree_dump(Tree_node *root)
     FILE *stream_txt =  fopen(dump_txt, "w");
     if   (stream_txt == nullptr)
     {
-        fprintf(stderr, "Can't open the dump_txt file\n");
+        fprintf(stderr, "Не могу открыть текстовый дамп-файл.\n");
         return;
     }
 
@@ -652,7 +656,7 @@ void Tree_dump(Tree_node *root)
 
     fclose(stream_txt);
 
-    fprintf(stderr, "Tree dumping was successful. Choose the mode.\n");
+    fprintf(stderr, "Дампинг произошёл успешно. Выбери режим.\n");
 }
 
 void Tree_dump_dfs(Tree_node *node, int *const node_number, FILE *const stream)

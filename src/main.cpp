@@ -18,9 +18,9 @@ int main()
     Tree_node *ROOT = (Tree_node *) calloc(1, sizeof(Tree_node));
    *ROOT = node_default;
 
-    fprintf_with_voice(stderr, "Hello, I am akinator!\n"
-                               "Choose the mode of the game.\n"
-                               "Print \"help\" to get manual.\n");
+    fprintf_with_voice(stderr, "Привет, я Акинатор!\n"
+                               "Выбери режим игры.\n"
+                               "Введи \"help\", чтобы получить инструкцию.\n");
 
     while (true)
     {
@@ -62,13 +62,13 @@ MODE get_mode()
     {
         clear_input_stream(stdin);
 
-        fprintf_with_voice(stderr, "Undefined mode. Print \"help\" to get manual.\n");
+        fprintf_with_voice(stderr, "Неопределённый режим. Введи \"help\", чтобы получить инструкцию.\n");
         return MODE_UNDEFINED;
     }
 
     #include "mode.h"
 
-    fprintf_with_voice(stderr, "Undefined mode. Print \"help\" to get manual.\n");
+    fprintf_with_voice(stderr, "Неопределённый режим. Введи \"help\", чтобы получить инструкцию.\n");
     return MODE_UNDEFINED;
 }
 
