@@ -126,10 +126,12 @@ void log_message(const char *fmt, ...)
 {
     if (_OPEN_CLOSE_LOG_STREAM == 0) return;
 
-    va_list ap;
+    va_list  ap;
     va_start(ap, fmt);
 
     vfprintf(LOG_STREAM, fmt, ap);
+
+    va_end(ap);
 }
 
 void log_header(const char *fmt, ...)
@@ -142,6 +144,8 @@ void log_header(const char *fmt, ...)
     fprintf (LOG_STREAM, "<h2>\n");
     vfprintf(LOG_STREAM, fmt, ap);
     fprintf (LOG_STREAM, "</h2>\n");
+
+    va_end(ap);
 }
 
 void log_char_ptr(const char *str_name, const char *str)
@@ -162,6 +166,8 @@ void log_error(const char *fmt, ...)
     fprintf (LOG_STREAM, RED "ERROR: ");
     vfprintf(LOG_STREAM, fmt, ap);
     fprintf (LOG_STREAM, CANCEL);
+
+    va_end(ap);
 }
 
 void log_warning(const char *fmt, ...)
@@ -174,4 +180,6 @@ void log_warning(const char *fmt, ...)
     fprintf (LOG_STREAM, ORANGE "WARNING: ");
     vfprintf(LOG_STREAM, fmt, ap);
     fprintf (LOG_STREAM, CANCEL);
+
+    va_end(ap);
 }

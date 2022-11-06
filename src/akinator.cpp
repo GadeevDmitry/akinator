@@ -39,7 +39,11 @@ void ctor_tree_node(Tree_node *node, Tree_node *prev, const char *node_data)
     node->visit_right = false;
 
     if    (node_data == nullptr) return;
-    memcpy(node->data, node_data, SIZE_DATA);
+    
+    int  cnt = 0;
+    for (cnt = 0; cnt < SIZE_DATA - 1 && node_data[cnt]; ++cnt) node->data[cnt] = node_data[cnt];
+
+    node->data[cnt] = '\0';
 }
 
 /*_______________________________________________________________________________________________*/
@@ -96,14 +100,10 @@ bool print_guess(const Tree_node *const node, char *const difference, char *cons
     while (true)
     {
         fprintf_with_voice(stderr, "Who have you guessed?\n");    
-
         get_line_stream(creature, SIZE_DATA, stdin)
-        if (!strcasecmp(creature, "exit")) exit(0)
 
         fprintf_with_voice(stderr, "What the difference between \"%s\" and \"%s\"?\n", creature, node->data);
-
         get_line_stream(difference, SIZE_DATA, stdin)
-        if (!strcasecmp(difference, "exit")) exit(0)
 
         return false;
     }
@@ -137,7 +137,6 @@ void mode_download()
             fprintf_with_voice(stderr, "You message is incorrect. Please print one word with not more than %d characters.\n", SIZE_DATA);
             continue;
         }
-        if (!strcasecmp(filename, "exit")) exit(0)
 
         if (read_input_base(filename))
         {
@@ -244,11 +243,11 @@ bool update_node(Tree_node *node, const char *buff, const int buff_size, size_t 
     return true;
 }
 
-bool get_node_data(char *s, const int max_size, const char *buff, const int buff_size, size_t *const pos)
+bool get_node_data(char *push_in, const int max_size, const char *buff, const int buff_size, size_t *const pos)
 {
-    assert(s   );
-    assert(buff);
-    assert(pos );
+    assert(push_in);
+    assert(buff   );
+    assert(pos    );
 
     bool  ans = false;
     int limit = (buff_size < max_size) ? buff_size : max_size - 1;
@@ -262,11 +261,11 @@ bool get_node_data(char *s, const int max_size, const char *buff, const int buff
             break;
         }
 
-        s[cnt] = buff[*pos];
-        ++*pos;
+        push_in[cnt] = buff[*pos];
+       *pos          = *pos + 1;
     }
 
-    s[cnt] = '\0';
+    push_in[cnt] = '\0';
     return ans;
 }
 
@@ -287,7 +286,6 @@ void mode_definition()
     while (true)
     {
         get_line_stream(term, SIZE_DATA, stdin)
-        if (!strcasecmp(term, "exit" )) exit(0)
 
         stack       tree_way;
         stack_ctor(&tree_way, sizeof(trip));
@@ -367,9 +365,7 @@ void mode_compare()
     while (true)
     {
         get_line_stream(term1, SIZE_DATA, stdin)
-        if (!strcasecmp(term1, "exit"))  exit(0)
         get_line_stream(term2, SIZE_DATA, stdin)
-        if (!strcasecmp(term2, "exit"))  exit(0)
 
         stack       tree_way1;
         stack       tree_way2;
@@ -545,7 +541,6 @@ bool yes_no()
         }
         if (!strcasecmp("yes" , answer)) return true ;
         if (!strcasecmp("no"  , answer)) return false;
-        if (!strcasecmp("exit", answer)) exit(0)
 
         fprintf_with_voice(stderr, "Undefined answer. Print \"yes\" or \"no\"\n");
     }
@@ -601,14 +596,14 @@ void voice(const char *s)
     char    cmd_text[SIZE_DATA] = "";
     sprintf(cmd_text, "%s", s);
 
-    for (int cnt = 0; cnt < SIZE_DATA; ++cnt)
+    for (int cnt = 0; cnt < SIZE_DATA && cmd_text[cnt]; ++cnt)
     {
         if (!isalnum(cmd_text[cnt]) ||
             cmd_text[cnt] == '\n' ) cmd_text[cnt] = ' ';
     }
 
-    //fprintf(stderr, "%s\n", cmd);
-    sprintf(cmd, "echo \"%s\" | festival --tts", cmd_text);
+    sprintf(cmd,    "echo \"%s\" | festival --tts", cmd_text);
+    //fprintf(stderr, "cmd - %s\n", cmd);
 
     system(cmd);
 

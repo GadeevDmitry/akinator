@@ -38,6 +38,10 @@ int main()
         {
             #include "mode.h"
         }
+
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #undef MODE
+        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     }
 }
 
@@ -54,8 +58,7 @@ MODE get_mode()
 {
     char mode[SIZE_MODE] = "";
 
-    scanf("%s", mode);
-
+    get_word(mode ,SIZE_MODE, stdin);
     if (!is_empty_input_stream(stdin))
     {
         clear_input_stream(stdin);
@@ -71,6 +74,7 @@ MODE get_mode()
 }
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#undef  MODE
 #define MODE(name, num, code, description)  \
         fprintf(stderr, "%-15s - %s\n", #name, description);
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

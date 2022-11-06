@@ -23,14 +23,14 @@ struct Tree_node
 
 const Tree_node node_default =
 {
-    "некто", // data
+    "anything", // data
 
-    false  , // visit_left
-    false  , // visit_right
+    false     , // visit_left
+    false     , // visit_right
 
-    nullptr, // prev
-    nullptr, // left
-    nullptr  // right
+    nullptr   , // prev
+    nullptr   , // left
+    nullptr     // right
 };
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -41,7 +41,6 @@ const Tree_node node_default =
 enum MODE
 {
     #include "mode.h"
-    MODE_FICTIONAL
 };
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -61,8 +60,8 @@ void fill_output_file   (Tree_node *node, FILE *const stream, int tab_shift);
 
 void mode_download      ();
 bool read_input_base    (const char *filename);
-bool update_node        (Tree_node *node,             const char *buff, const int buff_size, size_t *const pos);
-bool get_node_data      (char *s, const int max_size, const char *buff, const int buff_size, size_t *const pos);
+bool update_node        (Tree_node *node,                   const char *buff, const int buff_size, size_t *const pos);
+bool get_node_data      (char *push_in, const int max_size, const char *buff, const int buff_size, size_t *const pos);
 
 void mode_definition    ();
 bool Tree_definition_dfs(Tree_node *node, const char *term_to_find, stack *const tree_way);
@@ -75,18 +74,12 @@ void print_difference   (stack *const tree_way, int cnt, const int size);
 bool yes_no             ();
 void tab                (FILE *const stream, int n);
 void fprintf_with_voice (FILE *const stream, const char *fmt, ...);
-void voice              (const char *s);
+void voice              (const char *text);
 
 void Tree_dump          (Tree_node *root);
 void Tree_dump_dfs      (Tree_node *node, int *const node_number, FILE *const stream);
 void Tree_node_describe (Tree_node *node, int *const node_number, FILE *const stream);
 
 /*_______________________________________________________________________________________________*/
-
-#define exit(code)                                                                                              \
-        {                                                                                                       \
-            save_data(ROOT);                                                                                    \
-            exit     (code);                                                                                    \
-        }
 
 #endif //TREE_BINARY_H

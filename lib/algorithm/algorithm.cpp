@@ -107,10 +107,10 @@ void clear_input_stream(FILE *const stream)
     ungetc(clear_temp, stream);
 }
 
-void get_line(char *s, const int max_size, FILE *const stream)
+void get_line(char *push_in, const int max_size, FILE *const stream)
 {
-    assert(s     );
-    assert(stream);
+    assert(push_in);
+    assert(stream );
 
     skip_spaces(stream);
 
@@ -124,17 +124,17 @@ void get_line(char *s, const int max_size, FILE *const stream)
             break;
         }
         
-        s[cnt] = cur_char;
+        push_in[cnt] = cur_char;
     }
-    while (isspace(s[cnt - 1]) && cnt > 0)
+    while (isspace(push_in[cnt - 1]) && cnt > 0)
         --cnt;
-    s[cnt] = '\0';
+    push_in[cnt] = '\0';
 }
 
-void get_word(char *s, const int max_size, FILE *const stream)
+void get_word(char *push_in, const int max_size, FILE *const stream)
 {
-    assert(s     );
-    assert(stream);
+    assert(push_in);
+    assert(stream );
 
     skip_spaces(stream);
 
@@ -148,9 +148,9 @@ void get_word(char *s, const int max_size, FILE *const stream)
             break;
         }
 
-        s[cnt] = cur_char;
+        push_in[cnt] = cur_char;
     }
-    s[cnt] = '\0';
+    push_in[cnt] = '\0';
 }
 
 void skip_spaces(FILE *const stream)
@@ -187,11 +187,11 @@ void clear_input_buff(const char *buff, const int buff_size, size_t *const pos)
         ++ *pos;
 }
 
-void get_line(char *s, const int max_size, const char *buff, const int buff_size, size_t *const pos)
+void get_line(char *push_in, const int max_size, const char *buff, const int buff_size, size_t *const pos)
 {
-    assert(s   );
-    assert(buff);
-    assert(pos );
+    assert(push_in);
+    assert(buff   );
+    assert(pos    );
 
     int  limit = (buff_size < max_size) ? buff_size : max_size - 1;
 
@@ -200,19 +200,19 @@ void get_line(char *s, const int max_size, const char *buff, const int buff_size
     {
         if (buff[*pos] == '\0' || buff[*pos] == '\n') break;
         
-        s[cnt] = buff[*pos];
+        push_in[cnt] = buff[*pos];
         ++*pos;
     }
-    while (isspace(s[cnt - 1]) && cnt > 0)
+    while (isspace(push_in[cnt - 1]) && cnt > 0)
         --cnt;
-    s[cnt] = '\0';
+    push_in[cnt] = '\0';
 }
 
-void get_word(char *s, const int max_size, const char *buff, const int buff_size, size_t *const pos)
+void get_word(char *push_in, const int max_size, const char *buff, const int buff_size, size_t *const pos)
 {
-    assert(s     );
-    assert(buff  );
-    assert(pos   );
+    assert(push_in);
+    assert(buff   );
+    assert(pos    );
 
     int limit = (buff_size < max_size) ? buff_size : max_size - 1;
 
@@ -221,10 +221,10 @@ void get_word(char *s, const int max_size, const char *buff, const int buff_size
     {
         if (buff[*pos] == '\0' || isspace(buff[*pos])) break;
 
-        s[cnt] = buff[*pos];
+        push_in[cnt] = buff[*pos];
         ++*pos;
     }
-    s[cnt] = '\0';
+    push_in[cnt] = '\0';
 }
 
 void skip_spaces(const char *buff, const int buff_size, size_t *const pos)
