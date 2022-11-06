@@ -561,50 +561,54 @@ void tab(FILE *const stream, int n)
 void fprintf_with_voice(FILE *const stream, const char *fmt, ...)
 {
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    fprintf(stderr, "I am in fprintf_with_voice()\n");
+    //fprintf(stderr, "I am in fprintf_with_voice()\n");
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     va_list  ap;
     va_start(ap, fmt);
 
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    fprintf(stderr, "Alreay after va_init\n");
+    //fprintf(stderr, "Alreay after va_init\n");
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     char     output [SIZE_DATA] = "";
+    vsprintf(output, fmt, ap);
 
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    fprintf(stderr, "Already after char_init\n");
+    //fprintf(stderr, "Already after char_init\n");
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    
-    //vsprintf(output, fmt, ap);
 
-    //fprintf(stderr, output);
 
-    //vfprintf(stream, fmt, ap);
-
-    //voice  (        output);
+    fprintf(stderr, output); 
+    voice  (        output);
     
     //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //fprintf(stderr, "return to fprintf_with_voice()\n");
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     
-    //va_end(ap);
+    va_end(ap);
 }
 
 void voice(const char *s)
 {
+    //>>>>>>>>>>>>>>>>>>>>>>
+    //fprintf(stderr, "start voice\n");
+    //<<<<<<<<<<<<<<<<<<<<<<
+
     assert(s);
 
-    char    cmd[SIZE_CMD] = "";
-    sprintf(cmd, "echo \"%s\" | festival --tts", s);
+    char    cmd     [SIZE_CMD ] = "";
+    char    cmd_text[SIZE_DATA] = "";
+    sprintf(cmd_text, "%s", s);
 
-    for (int cnt = 0; cnt < SIZE_CMD; ++cnt)
+    for (int cnt = 0; cnt < SIZE_DATA; ++cnt)
     {
-        if (!isalnum(cmd[cnt]) ||
-            cmd[cnt] == '\n' ) cmd[cnt] = ' ';
+        if (!isalnum(cmd_text[cnt]) ||
+            cmd_text[cnt] == '\n' ) cmd_text[cnt] = ' ';
     }
+
     //fprintf(stderr, "%s\n", cmd);
+    sprintf(cmd, "echo \"%s\" | festival --tts", cmd_text);
 
     system(cmd);
 

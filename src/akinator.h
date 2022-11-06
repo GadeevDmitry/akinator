@@ -5,9 +5,9 @@
 
 #include "../lib/stack/stack.h"
 
-const int SIZE_DATA = 100;
-const int SIZE_MODE =  10;
-const int SIZE_CMD  = 200;
+const int SIZE_DATA =  500;
+const int SIZE_MODE =   50;
+const int SIZE_CMD  = 1000;
 
 struct Tree_node
 {
