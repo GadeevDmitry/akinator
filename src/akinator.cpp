@@ -635,7 +635,7 @@ void Tree_dump(Tree_node *root)
     FILE *stream_txt =  fopen(dump_txt, "w");
     if   (stream_txt == nullptr)
     {
-        fprintf(stderr, "Не могу открыть текстовый дамп-файл.\n");
+        fprintf_with_voice(stderr, "Не могу открыть текстовый дамп-файл.\n");
         return;
     }
 
@@ -656,7 +656,7 @@ void Tree_dump(Tree_node *root)
 
     fclose(stream_txt);
 
-    fprintf(stderr, "Дампинг произошёл успешно. Выбери режим.\n");
+    fprintf_with_voice(stderr, "Дампинг произошёл успешно. Выбери режим.\n");
 }
 
 void Tree_dump_dfs(Tree_node *node, int *const node_number, FILE *const stream)
