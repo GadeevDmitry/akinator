@@ -358,8 +358,8 @@ void mode_compare()
         get_line_stream(term1, SIZE_DATA, stdin)
         get_line_stream(term2, SIZE_DATA, stdin)
 
-        stack       tree_way1;
-        stack       tree_way2;
+        stack       tree_way1 =           {};
+        stack       tree_way2 =           {};
         stack_ctor(&tree_way1, sizeof(trip));
         stack_ctor(&tree_way2, sizeof(trip));
 
@@ -397,10 +397,13 @@ void print_compare(stack *const tree_way1, const char *term1, stack *const tree_
     int size1 = tree_way1->size;
     int size2 = tree_way2->size;
 
+    trip *beg1 = (trip *) tree_way1->data;
+    trip *beg2 = (trip *) tree_way2->data;
+
     for (; cnt1 < size1 && cnt2 < size2; ++cnt1, ++cnt2)
     {
-        trip cur1 = *(trip *) ((char *) tree_way1->data + cnt2 * sizeof(trip));
-        trip cur2 = *(trip *) ((char *) tree_way2->data + cnt1 * sizeof(trip));
+        trip cur1 = beg1[cnt1];
+        trip cur2 = beg2[cnt2];
 
         if (!strcasecmp(cur1.node_data, cur2.node_data) && cur1.yes == cur2.yes)
         {
@@ -440,9 +443,11 @@ void print_difference(stack *const tree_way, int cnt, const int size)
 {
     assert(tree_way);
 
+    trip *beg = (trip *) tree_way->data;
+
     for (; cnt < size; ++cnt)
     {
-        trip cur = *(trip *) ((char *) tree_way->data + cnt * sizeof(trip));
+        trip cur = beg[cnt];
 
         if (cur.yes) fprintf_with_voice(stderr, "%s"    , cur.node_data);
         else         fprintf_with_voice(stderr, "not %s", cur.node_data);
