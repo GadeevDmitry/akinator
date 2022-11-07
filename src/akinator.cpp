@@ -19,8 +19,8 @@
         if (!is_empty_input_stream(stream))                                                                                 \
         {                                                                                                                   \
             clear_input_stream(stream);                                                                                     \
-                                                                                                                            \
-            fprintf_with_voice(stderr, "Сообщение слишком длинное. Введи не более %d символов.\n", SIZE_DATA);              \
+            fprintf_with_voice(stderr, "Сообщение слишком длинное. ");                                                      \
+            fprintf           (stderr, "Введи не более %d символов.\n", SIZE_DATA);                                         \
             continue;                                                                                                       \
         }
 
@@ -133,7 +133,8 @@ void mode_download(Tree_node *const ROOT)
         {
             clear_input_stream(stdin);
 
-            fprintf_with_voice(stderr, "Некорректный путь. Введи одно слово из не более,чем %d симаолов.\n", SIZE_DATA);
+            fprintf_with_voice(stderr, "Некорректный путь. ");
+            fprintf           (stderr, "Введи одно слово из не более,чем %d симаолов.\n", SIZE_DATA);
             continue;
         }
 
@@ -147,8 +148,9 @@ void mode_download(Tree_node *const ROOT)
 
 #define wrong_file_fmt()                                                                        \
         {                                                                                       \
-        fprintf_with_voice(stderr, "Неправильный формат \"%s\". Введи другое имя.\n", filename);\
-        free   (data_base);                                                                     \
+        fprintf_with_voice(stderr, "Неправильный формат ");                                     \
+        fprintf           (stderr, "\"%s\". Введи другое имя.\n", filename);                    \
+        free              (data_base);                                                          \
         return false;                                                                           \
         }
 
@@ -164,7 +166,8 @@ bool read_input_base(Tree_node *const ROOT, const char *filename)
     char  *data_base =  (char *) read_file(filename, &data_size);
     if    (data_base == nullptr)
     {
-        fprintf_with_voice(stderr, "Не могу открыть файл. Введи другое имя.\n");
+        fprintf_with_voice(stderr, "Не могу открыть файл. ");
+        fprintf           (stderr, "Введи другое имя.\n");
         return false;
     }
 
@@ -295,7 +298,8 @@ void mode_definition(Tree_node *const ROOT)
         }
         else
         {
-            fprintf_with_voice(stderr, "Этого термина нет в базе. Назови другое имя.\n");
+            fprintf_with_voice(stderr, "Этого термина нет в базе. ");
+            fprintf           (stderr, "Назови другое имя.\n");
             continue;
         }
     }
@@ -371,12 +375,14 @@ void mode_compare(Tree_node *const ROOT)
 
         if (!Tree_definition_dfs(ROOT, term1, &tree_way1))
         {
-            fprintf_with_voice(stderr, "Первого термина нет в базе. Введи другое имя.\n");
+            fprintf_with_voice(stderr, "Первого термина нет в базе. ");
+            fprintf           (stderr, "Введи другое имя.\n");
             continue;
         }
         if (!Tree_definition_dfs(ROOT, term2, &tree_way2))
         {
-            fprintf_with_voice(stderr, "Второго термина нет в базе. Введи другое имя.\n");
+            fprintf_with_voice(stderr, "Второго термина нет в базе. ");
+            fprintf           (stderr, "Введи другое имя.\n");
             continue;
         }
 
@@ -466,7 +472,8 @@ void print_difference(stack *const tree_way, int cnt, const int size)
 
 void save_data(Tree_node *node)
 {
-    fprintf_with_voice(stderr, "Введи путь до файла, в который сохранить базу(или введи \"-\", чтобы не сохранять её).\n");
+    fprintf_with_voice(stderr, "Введи путь до файла, в который сохранить базу");
+    fprintf           (stderr, "или введи \"-\", чтобы не сохранять её).\n");
     
     //>>>>>>>>>>>>>>>>
     //fprintf(stderr, "return to save_data()\n");
@@ -484,7 +491,8 @@ void save_data(Tree_node *node)
         {
             clear_input_stream(stdin);
 
-            fprintf_with_voice(stderr, "Некорректное имя файла. Введи другое имя.\n");
+            fprintf_with_voice(stderr, "Некорректное имя файла. ");
+            fprintf           (stderr, "Введи другое имя.\n");
             continue;
         }
         if (!strcmp("-", filename)) return;
@@ -538,13 +546,15 @@ bool yes_no()
         {
             clear_input_stream(stdin);
 
-            fprintf_with_voice(stderr, "Неопределённый ответ. Скажи \"да\" или \"нет\"\n");
+            fprintf           (stderr, "Неопределённый ответ. ");
+            fprintf_with_voice(stderr, "Скажи \"да\" или \"нет\"\n");
             continue;
         }
         if (!strcasecmp("да" , answer)) return true ;
         if (!strcasecmp("нет"  , answer)) return false;
 
-        fprintf_with_voice(stderr, "Неопределённый ответ. Скажи \"да\" или \"нет\"\n");
+        fprintf           (stderr, "Неопределённый ответ. ");
+        fprintf_with_voice(stderr, "Скажи \"да\" или \"нет\"\n");
     }
 
     return true;
