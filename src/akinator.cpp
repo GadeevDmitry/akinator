@@ -344,8 +344,8 @@ void print_definition(stack *const tree_way, const char *term)
     {
         trip cur = *(trip *) ((char *) tree_way->data + sizeof(trip) * cnt);
 
-        if (cur.yes) fprintf_with_voice(stderr, "%s"    , cur.node_data);
-        else         fprintf_with_voice(stderr, "не %s", cur.node_data);
+        if (cur.yes) fprintf(stderr, "%s"    , cur.node_data);
+        else         fprintf(stderr, "не %s", cur.node_data);
 
         if (cnt != size - 1) fprintf(stderr, ", ");
         else                 fprintf(stderr, ".\n");
@@ -422,30 +422,30 @@ void print_compare(stack *const tree_way1, const char *term1, stack *const tree_
             if (!same)
             {
                 same = true;
-                fprintf_with_voice(stderr, "\"%s\" и \"%s\" оба ", term1, term2);
+                fprintf(stderr, "\"%s\" и \"%s\" оба ", term1, term2);
             }
             else fprintf(stderr, ", ");
 
-            if (cur1.yes) fprintf_with_voice(stderr, "%s"    , cur1.node_data);
-            else          fprintf_with_voice(stderr, "не %s", cur2.node_data);
+            if (cur1.yes) fprintf(stderr, "%s"    , cur1.node_data);
+            else          fprintf(stderr, "не %s", cur2.node_data);
         }
         else break;
     }
 
     if (cnt1 < size1)
     {
-        fprintf_with_voice(stderr, ", но \"%s\" также ", term1);
+        fprintf(stderr, ", но \"%s\" также ", term1);
         print_difference  (tree_way1, cnt1, size1);
 
         if (tree_way2->size)
         {
-            fprintf_with_voice(stderr, ", a \"%s\" ещё и ", term2);
+            fprintf(stderr, ", a \"%s\" ещё и ", term2);
             print_difference  (tree_way2, cnt2, size2);
         }
     }
     else if (cnt2 < size2)
     {
-        fprintf_with_voice(stderr, ", но \"%s\" также ", term2);
+        fprintf(stderr, ", но \"%s\" также ", term2);
         print_difference  (tree_way2, cnt2, size2);
     }
     fprintf(stderr, ".\n");
@@ -461,8 +461,8 @@ void print_difference(stack *const tree_way, int cnt, const int size)
     {
         trip cur = beg[cnt];
 
-        if (cur.yes) fprintf_with_voice(stderr, "%s"    , cur.node_data);
-        else         fprintf_with_voice(stderr, "но %s", cur.node_data);
+        if (cur.yes) fprintf(stderr, "%s"    , cur.node_data);
+        else         fprintf(stderr, "но %s", cur.node_data);
 
         if (cnt != size - 1) fprintf(stderr, ", ");
     }
