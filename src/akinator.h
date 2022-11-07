@@ -18,11 +18,11 @@ struct Tree_node
 
 const Tree_node node_default =
 {
-    "anything", // data
+    "кто-то неизвестный", // data
 
-    nullptr   , // prev
-    nullptr   , // left
-    nullptr     // right
+    nullptr             , // prev
+    nullptr             , // left
+    nullptr               // right
 };
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

@@ -675,8 +675,8 @@ void Tree_dump_dfs(Tree_node *node, int *const node_number, FILE *const stream)
     int number_right = *node_number;
     Tree_dump_dfs(node->right, node_number, stream);
 
-    fprintf(stream, "node%d->node%d[xlabel=\"Yes\", color=\"black\"]\n", number_cur, number_left);
-    fprintf(stream, "node%d->node%d[xlabel=\"No \", color=\"black\"]\n", number_cur, number_right);
+    fprintf(stream, "node%d->node%d[xlabel=\"Да \", color=\"black\"]\n", number_cur, number_left);
+    fprintf(stream, "node%d->node%d[xlabel=\"Нет\", color=\"black\"]\n", number_cur, number_right);
 }
 
 void Tree_node_describe(Tree_node *node, int *const node_number, FILE *const stream)
