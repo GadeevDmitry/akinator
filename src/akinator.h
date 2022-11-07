@@ -11,6 +11,8 @@ struct Tree_node
 {
     char data[SIZE_DATA];
 
+    bool from_disk;
+
     Tree_node *prev;
     Tree_node *left;
     Tree_node *right;
@@ -20,6 +22,8 @@ const Tree_node node_default =
 {
     "кто-то неизвестный", // data
 
+    false               , // from_disk
+    
     nullptr             , // prev
     nullptr             , // left
     nullptr               // right

@@ -28,12 +28,13 @@ const int SIZE_ANS = 20;
 
 /*_______________________________________________________________________________________________*/
 
-void ctor_tree_node(Tree_node *node, Tree_node *prev, const char *node_data)
+void ctor_tree_node(Tree_node *node, Tree_node *prev, const char *node_data, bool from_disk)
 {
     assert(node);
 
    *node              = node_default;
     node->prev        = prev;
+    node->from_disk   = from_disk;
 
     if    (node_data == nullptr) return;
 
@@ -59,8 +60,8 @@ void mode_guess(Tree_node *node)
             node->left  = (Tree_node *) calloc(sizeof(Tree_node), 1);
             node->right = (Tree_node *) calloc(sizeof(Tree_node), 1);
 
-            ctor_tree_node(node->right, node, node->data);
-            ctor_tree_node(node->left , node, creature  );
+            ctor_tree_node(node->right, node, node->data, false);
+            ctor_tree_node(node->left , node, creature  , false);
 
             memcpy(node->data, difference, SIZE_DATA);
         }
@@ -159,6 +160,7 @@ bool read_input_base(Tree_node *const ROOT, const char *filename)
     assert(ROOT    );
     assert(filename);
 
+    ROOT->from_disk = true;
     Tree_node *node = nullptr;
 
     size_t data_size = 0;
@@ -196,13 +198,13 @@ bool read_input_base(Tree_node *const ROOT, const char *filename)
                 if (node->left == nullptr)
                 {
                     node->left  = (Tree_node *) calloc(1, sizeof(Tree_node));
-                    ctor_tree_node(node->left , node, nullptr);
+                    ctor_tree_node(node->left , node, nullptr, true);
                     node = node->left;
                 }
                 else if (node->right == nullptr)
                 {
                     node->right = (Tree_node *) calloc(1, sizeof(Tree_node));
-                    ctor_tree_node(node->right, node, nullptr);
+                    ctor_tree_node(node->right, node, nullptr, true);
                     node = node->right;
                 }
                 else wrong_file_fmt()
@@ -697,25 +699,36 @@ void Tree_node_describe(Tree_node *node, int *const node_number, FILE *const str
     GRAPHVIZ_COLOR fillcolor = WHITE;
     GRAPHVIZ_COLOR     color = WHITE;
 
-    if (node->left == nullptr)
+    if (node->left == nullptr && node->from_disk)
     {
         fillcolor = LIGHT_BLUE;
             color =  DARK_BLUE;
     }
-    else
+    else if (node->left != nullptr && node->from_disk)
     {
         fillcolor = LIGHT_GREEN;
             color =  DARK_GREEN;
     }
+    else if (node->left == nullptr && !node->from_disk)
+    {
+        fillcolor = LIGHT_ORANGE;
+            color =  DARK_ORANGE;
+    }
+    else
+    {
+        fillcolor = LIGHT_PINK;
+            color =  DARK_PINK;
+    }
 
-    fprintf(stream, "node%d[color=\"%s\", fillcolor=\"%s\", label=\"{cur=%p\\n | prev = %p\\n | :%s:\\n | {left=%p | right=%p}}\"]\n",
+    fprintf(stream, "node%d[color=\"%s\", fillcolor=\"%s\", label=\"{cur=%p \\n | from_disk=%d \\n | prev = %p\\n | :%s:\\n | {left=%p | right=%p}}\"]\n",
                     *node_number,
                                     graphviz_color_names[color],
                                                       graphviz_color_names[fillcolor],
-                                                                       node,
-                                                                                      node->prev,
-                                                                                                 node->data,
-                                                                                                                node->left,
-                                                                                                                           node->right);
+                                                                         node,
+                                                                                            node->from_disk,
+                                                                                                            node->prev,
+                                                                                                                     node->data,
+                                                                                                                                    node->left,
+                                                                                                                                               node->right);
     ++*node_number;
 }
