@@ -60,9 +60,11 @@ void mode_guess(Tree_node *node)
             node->left  = (Tree_node *) calloc(sizeof(Tree_node), 1);
             node->right = (Tree_node *) calloc(sizeof(Tree_node), 1);
 
-            ctor_tree_node(node->right, node, node->data, false);
-            ctor_tree_node(node->left , node, creature  , false);
+            ctor_tree_node(node->right, node, node->data, node->from_disk);
+            ctor_tree_node(node->left , node, creature  , false          );
 
+            node->from_disk = false;
+            
             memcpy(node->data, difference, SIZE_DATA);
         }
 
@@ -464,7 +466,7 @@ void print_difference(stack *const tree_way, int cnt, const int size)
         trip cur = beg[cnt];
 
         if (cur.yes) fprintf(stderr, "%s"    , cur.node_data);
-        else         fprintf(stderr, "но %s", cur.node_data);
+        else         fprintf(stderr, "не %s", cur.node_data);
 
         if (cnt != size - 1) fprintf(stderr, ", ");
     }
