@@ -10,10 +10,23 @@ void stack_ctor(stack *const stk, const size_t el_size)
 {
     assert(stk != nullptr);
 
-    *stk = {};
+   *stk = {};
     stk->el_size  = el_size;
     stk->data     = calloc(el_size, 4); //default elementary capacity
     stk->capacity = 4;
+}
+
+stack *new_stack(const size_t el_size)
+{
+    stack *new_stk = (stack *) calloc(sizeof(stack), 1);
+    assert(new_stk);
+
+    //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    //fprintf(stderr, "stack is valid\n");
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+    stack_ctor(new_stk, el_size);
+    return     new_stk;
 }
 
 void stack_dtor(stack *const stk)
@@ -73,5 +86,26 @@ void stack_realloc(stack *const stk)
     {
         stk->capacity = (stk->size >= 2) ? 2 * stk->size : 4;
         stk->data     = realloc(stk->data, stk->el_size * stk->capacity);
+    }
+}
+
+void stack_dump(stack *const stk)
+{
+    assert(stk);
+
+    fprintf(stderr, "{\n"
+                    "el_size  = %ld\n"
+                    "capacity = %ld\n"
+                    "size     = %ld\n"
+                    "}\n",
+                    stk->el_size,
+                    stk->capacity,
+                    stk->size       );
+    
+    for (int i = 0; i < stk->size; ++i)
+    {
+        void *ptr = *(void **) ((char *) stk->data + i * sizeof(void *));
+
+        fprintf(stderr, "i: %p\n", ptr);
     }
 }

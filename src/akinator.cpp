@@ -26,6 +26,12 @@
 
 const int SIZE_ANS = 20;
 
+struct trip
+{
+    char *node_data;
+    bool        yes;
+};
+
 /*_______________________________________________________________________________________________*/
 
 void ctor_tree_node(Tree_node *node, Tree_node *prev, const char *node_data, bool from_disk)
@@ -44,58 +50,123 @@ void ctor_tree_node(Tree_node *node, Tree_node *prev, const char *node_data, boo
     node->data[cnt] = '\0';
 }
 
+Tree_node *new_tree_node(Tree_node *prev, const char *node_data, bool from_disk)
+{
+    Tree_node *new_node = (Tree_node *) calloc(sizeof(Tree_node), 1);
+    if        (new_node == nullptr) return nullptr;
+
+    ctor_tree_node(new_node, prev, node_data, from_disk);
+    return          new_node;
+}
+
 /*_______________________________________________________________________________________________*/
 
-void mode_guess(Tree_node *node)
+void mode_guess(Tree_node *node, stack * postponed_stk)
 {
     assert(node);
 
+    if (postponed_stk == nullptr) postponed_stk = new_stack(sizeof(Tree_node *));
+
+    assert(postponed_stk);
+
     if (node->left == nullptr && node->right == nullptr)
     {
-        char *creature   = (char *) calloc(sizeof(char), SIZE_DATA);
-        char *difference = (char *) calloc(sizeof(char), SIZE_DATA);
-
-        if (!print_guess(node, difference, creature))
+        if (print_guess_quation(node) == NO)
         {
-            node->left  = (Tree_node *) calloc(sizeof(Tree_node), 1);
-            node->right = (Tree_node *) calloc(sizeof(Tree_node), 1);
+            if (!get_postponed_node_from_stack(postponed_stk, &node))
+            {
+                get_new_terminal_node(node);
 
-            ctor_tree_node(node->right, node, node->data, node->from_disk);
-            ctor_tree_node(node->left , node, creature  , false          );
-
-            node->from_disk = false;
-            
-            memcpy(node->data, difference, SIZE_DATA);
+                free              (postponed_stk);
+                fprintf_with_voice(stderr, "Конец игры. Выбери режим.\n");
+                return;
+            }
         }
-
-        free(creature);
-        free(difference);
-
-        fprintf_with_voice(stderr, "Конец игры. Выбери режим.\n");
-
-        return;
+        else
+        {
+            print_guess_answer(nullptr, nullptr, nullptr, YES);
+            
+            free              (postponed_stk);
+            fprintf_with_voice(stderr, "Конец игры. Выбери режим.\n");
+            return;
+        }
     }
-    if (print_quation(node)) node = node->left;
-    else                     node = node->right;
 
-    mode_guess(node);
+    get_next_node(&node, postponed_stk);
+    mode_guess   ( node, postponed_stk);
 }
 
-bool print_guess(const Tree_node *const node, char *const difference, char *const creature)
+void get_next_node(Tree_node **node, stack *const postponed_stk)
 {
-    assert(node      );
-    assert(difference);
-    assert(creature  );
+    assert( node        );
+    assert(*node        );
+    assert(postponed_stk);
+
+    switch(print_quation(*node))
+    {
+        case YES:
+            *node = (*node)->left;
+            break;
+        
+        case NO:
+            *node = (*node)->right;
+            break;
+        
+        case MAYBE_YES:
+            stack_push(postponed_stk, &(*node)->right);
+            *node = (*node)->left;
+            break;
+
+        case MAYBE_NO:
+            stack_push(postponed_stk, &(*node)->left);
+            *node = (*node)->right;
+            break;
+        
+        default:
+            assert(0 && "default in this switch must not be");
+            break;
+    }
+}
+
+void get_new_terminal_node(Tree_node *node)
+{
+    assert(node);
+
+    char *creature   = (char *) calloc(sizeof(char), SIZE_DATA);
+    char *difference = (char *) calloc(sizeof(char), SIZE_DATA);
+
+    print_guess_answer(node, difference, creature, NO);
+
+    node->left  = (Tree_node *) new_tree_node(node, creature  , false          );
+    node->right = (Tree_node *) new_tree_node(node, node->data, node->from_disk);
+
+    node->from_disk = false;
+    memcpy(node->data, difference, SIZE_DATA);
+
+    free(creature  );
+    free(difference);
+}
+
+ANSWERS print_guess_quation(const Tree_node *const node)
+{
+    assert(node);
 
     fprintf_with_voice(stderr, "Ты загадал \"%s\"?\n", node->data);
+    return yes_no     (true);
+}
 
-    bool ans = yes_no();
+bool print_guess_answer(const Tree_node *const node, char *const difference, char *const creature, ANSWERS ans)
+{
 
-    if  (ans)
+    if (ans == YES)
     {
         fprintf_with_voice(stderr, "Это было проще простого)\n");
         return true;
     }
+
+    assert(node      );
+    assert(difference);
+    assert(creature  );
 
     while (true)
     {
@@ -111,12 +182,27 @@ bool print_guess(const Tree_node *const node, char *const difference, char *cons
     return false;
 }
 
-bool print_quation(const Tree_node *const node)
+ANSWERS print_quation(const Tree_node *const node)
 {
     assert(node);
 
     fprintf_with_voice(stderr, "Твой персонаж %s?\n", node->data);
     return yes_no();
+}
+
+/*_______________________________________________________________________________________________*/
+
+bool get_postponed_node_from_stack(stack *const postponed_stack, Tree_node **const push_in)
+{
+    assert(postponed_stack);
+    assert(push_in        );
+
+    if (stack_empty(postponed_stack)) return false;
+
+    memcpy   (push_in, stack_front(postponed_stack), sizeof(Tree_node *));
+    stack_pop(postponed_stack);
+    
+    return true;
 }
 
 /*_______________________________________________________________________________________________*/
@@ -271,11 +357,6 @@ bool get_node_data(char *push_in, const int max_size, const char *buff, const in
 
 /*_______________________________________________________________________________________________*/
 
-struct trip
-{
-    char *node_data;
-    bool        yes;
-};
 
 void mode_definition(Tree_node *const ROOT)
 {
@@ -538,7 +619,7 @@ void fill_output_file(Tree_node *node, FILE *const stream, int tab_shift)
 
 /*_______________________________________________________________________________________________*/
 
-bool yes_no()
+ANSWERS yes_no(bool strict)
 {
     char answer[SIZE_ANS] = "";
 
@@ -550,18 +631,26 @@ bool yes_no()
         {
             clear_input_stream(stdin);
 
-            fprintf           (stderr, "Неопределённый ответ. ");
-            fprintf_with_voice(stderr, "Скажи \"да\" или \"нет\"\n");
+            fprintf_with_voice(stderr, "Неопределённый ответ. ");
+
+            if (!strict) fprintf(stderr, "Скажи одно из: \"да\", \"нет\", \"скорее_да\", \"скорее_нет\".\n");
+            else         fprintf(stderr, "Скажи \"да\" или \"нет\".\n");
+
             continue;
         }
-        if (!strcasecmp("да" , answer)) return true ;
-        if (!strcasecmp("нет"  , answer)) return false;
+        if (!strcasecmp("да", answer)) return YES;
+        if (!strcasecmp("нет", answer)) return NO;
 
-        fprintf           (stderr, "Неопределённый ответ. ");
-        fprintf_with_voice(stderr, "Скажи \"да\" или \"нет\"\n");
+        if (!strict && !strcasecmp("скорее_да", answer)) return MAYBE_YES;
+        if (!strict && !strcasecmp("скорее_нет", answer)) return MAYBE_NO;
+
+        fprintf_with_voice(stderr, "Неопределённый ответ. ");
+
+        if (!strict) fprintf(stderr, "Скажи одно из: \"да\", \"нет\", \"скорее_да\", \"скорее_нет\".\n");
+        else         fprintf(stderr, "Скажи \"да\" или \"нет\".\n");
     }
 
-    return true;
+    return YES;
 }
 
 void tab(FILE *const stream, int n)
