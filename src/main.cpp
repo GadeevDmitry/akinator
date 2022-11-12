@@ -19,9 +19,9 @@ int main()
     Tree_node *ROOT = (Tree_node *) calloc(1, sizeof(Tree_node));
    *ROOT = node_default;
 
-    fprintf_with_voice(stderr, "Привет, я Акинатор!\n"
-                               "Выбери режим игры.\n");
-    fprintf           (stderr, "Введи \"help\", чтобы получить инструкцию.\n");
+    fprintf_with_voice(stderr, "Привет, я Акинатор!\n");
+    fprintf           (stderr, "Выбери режим игры.\n"
+                               "Введи \"help\", чтобы получить инструкцию.\n");
 
     while (true)
     {

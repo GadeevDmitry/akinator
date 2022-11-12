@@ -558,7 +558,7 @@ void print_difference(stack *const tree_way, int cnt, const int size)
 void save_data(Tree_node *node)
 {
     fprintf_with_voice(stderr, "Введи путь до файла, в который сохранить базу");
-    fprintf           (stderr, "или введи \"-\", чтобы не сохранять её).\n");
+    fprintf           (stderr, " (или введи \"-\", чтобы не сохранять её).\n");
     
     //>>>>>>>>>>>>>>>>
     //fprintf(stderr, "return to save_data()\n");
