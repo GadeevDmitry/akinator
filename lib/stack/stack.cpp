@@ -21,10 +21,6 @@ stack *new_stack(const size_t el_size)
     stack *new_stk = (stack *) calloc(sizeof(stack), 1);
     assert(new_stk);
 
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    //fprintf(stderr, "stack is valid\n");
-    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
     stack_ctor(new_stk, el_size);
     return     new_stk;
 }

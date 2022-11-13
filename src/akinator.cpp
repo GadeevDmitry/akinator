@@ -4,6 +4,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
+#include <SFML/Graphics.hpp>
 
 #include "../lib/logs/log.h"
 #include "../lib/graph_dump/graph_dump.h"
@@ -25,6 +26,10 @@
         }
 
 const int SIZE_ANS = 20;
+
+extern sf::RenderWindow wnd;
+const int     HEIGHT = 247;
+const int      WIDTH = 215;
 
 struct trip
 {
@@ -61,9 +66,11 @@ Tree_node *new_tree_node(Tree_node *prev, const char *node_data, bool from_disk)
 
 /*_______________________________________________________________________________________________*/
 
-void mode_guess(Tree_node *node, stack * postponed_stk)
+void mode_guess(Tree_node *node, stack *postponed_stk)
 {
     assert(node);
+
+    check_event();
 
     if (postponed_stk == nullptr) postponed_stk = new_stack(sizeof(Tree_node *));
 
@@ -81,6 +88,8 @@ void mode_guess(Tree_node *node, stack * postponed_stk)
                 fprintf_with_voice(stderr, "Конец игры. Выбери режим.\n");
                 return;
             }
+            mode_guess(node, postponed_stk);
+            return;
         }
         else
         {
@@ -101,6 +110,8 @@ void get_next_node(Tree_node **node, stack *const postponed_stk)
     assert( node        );
     assert(*node        );
     assert(postponed_stk);
+
+    check_event();
 
     switch(print_quation(*node))
     {
@@ -132,6 +143,8 @@ void get_new_terminal_node(Tree_node *node)
 {
     assert(node);
 
+    check_event();
+
     char *creature   = (char *) calloc(sizeof(char), SIZE_DATA);
     char *difference = (char *) calloc(sizeof(char), SIZE_DATA);
 
@@ -151,15 +164,20 @@ ANSWERS print_guess_quation(const Tree_node *const node)
 {
     assert(node);
 
+    check_event();
+
+    draw_akinator     ("focused");
     fprintf_with_voice(stderr, "Ты загадал \"%s\"?\n", node->data);
     return yes_no     (true);
 }
 
 bool print_guess_answer(const Tree_node *const node, char *const difference, char *const creature, ANSWERS ans)
 {
+    check_event();
 
     if (ans == YES)
     {
+        draw_akinator     ("happy");
         fprintf_with_voice(stderr, "Это было проще простого)\n");
         return true;
     }
@@ -168,8 +186,12 @@ bool print_guess_answer(const Tree_node *const node, char *const difference, cha
     assert(difference);
     assert(creature  );
 
+    draw_akinator("angry");
+
     while (true)
     {
+        check_event();
+
         fprintf_with_voice(stderr, "Кого ты загадал?\n");    
         get_line_stream(creature, SIZE_DATA, stdin)
 
@@ -186,7 +208,9 @@ ANSWERS print_quation(const Tree_node *const node)
 {
     assert(node);
 
+    draw_akinator     ("thoughtful");
     fprintf_with_voice(stderr, "Твой персонаж %s?\n", node->data);
+    
     return yes_no();
 }
 
@@ -196,6 +220,8 @@ bool get_postponed_node_from_stack(stack *const postponed_stack, Tree_node **con
 {
     assert(postponed_stack);
     assert(push_in        );
+
+    check_event();
 
     if (stack_empty(postponed_stack)) return false;
 
@@ -211,17 +237,22 @@ void mode_download(Tree_node *const ROOT)
 {
     assert(ROOT);
 
+    check_event();
+
     fprintf_with_voice(stderr, "Введи путь до файла, откуда взять базу.\n");
 
     char filename[SIZE_DATA] = "";
 
     while (true)
     {
+        check_event();
+
         get_word(filename, SIZE_DATA, stdin);
         if (!is_empty_input_stream(stdin))
         {
             clear_input_stream(stdin);
 
+            draw_akinator     ("angry");
             fprintf_with_voice(stderr, "Некорректный путь. ");
             fprintf           (stderr, "Введи одно слово из не более,чем %d симаолов.\n", SIZE_DATA);
             continue;
@@ -229,6 +260,7 @@ void mode_download(Tree_node *const ROOT)
 
         if (read_input_base(ROOT, filename))
         {
+            draw_akinator     ("happy");
             fprintf_with_voice(stderr, "Парсинг произошёл успешно. Выбери режим.\n");
             return;
         }
@@ -237,6 +269,7 @@ void mode_download(Tree_node *const ROOT)
 
 #define wrong_file_fmt()                                                                        \
         {                                                                                       \
+        draw_akinator     ("angry");                                                            \
         fprintf_with_voice(stderr, "Неправильный формат ");                                     \
         fprintf           (stderr, "\"%s\". Введи другое имя.\n", filename);                    \
         free              (data_base);                                                          \
@@ -248,6 +281,8 @@ bool read_input_base(Tree_node *const ROOT, const char *filename)
     assert(ROOT    );
     assert(filename);
 
+    check_event();
+
     ROOT->from_disk = true;
     Tree_node *node = nullptr;
 
@@ -256,6 +291,7 @@ bool read_input_base(Tree_node *const ROOT, const char *filename)
     char  *data_base =  (char *) read_file(filename, &data_size);
     if    (data_base == nullptr)
     {
+        draw_akinator     ("angry");
         fprintf_with_voice(stderr, "Не могу открыть файл. ");
         fprintf           (stderr, "Введи другое имя.\n");
         return false;
@@ -265,6 +301,8 @@ bool read_input_base(Tree_node *const ROOT, const char *filename)
 
     while (data_base[data_pos] != '\0')
     {
+        check_event();
+
         char c = data_base[data_pos++];
 
         if  (c == '}')
@@ -321,6 +359,8 @@ bool update_node(Tree_node *node, const char *buff, const int buff_size, size_t 
     assert(buff);
     assert(pos );
 
+    check_event();
+
     char node_data[SIZE_DATA] = "";
 
     if (!get_node_data(node_data, SIZE_DATA, buff, buff_size, pos)) return false;
@@ -334,6 +374,8 @@ bool get_node_data(char *push_in, const int max_size, const char *buff, const in
     assert(push_in);
     assert(buff   );
     assert(pos    );
+
+    check_event();
 
     bool  ans = false;
     int limit = (buff_size < max_size) ? buff_size : max_size - 1;
@@ -361,13 +403,18 @@ bool get_node_data(char *push_in, const int max_size, const char *buff, const in
 void mode_definition(Tree_node *const ROOT)
 {
     assert(ROOT);
+    
+    check_event();
 
+    draw_akinator     ("banal");
     fprintf_with_voice(stderr, "Назови имя того, чьё определение тебя интересует.\n");
 
     char term[SIZE_DATA] = "";
     
     while (true)
     {
+        check_event();
+
         get_line_stream(term, SIZE_DATA, stdin)
 
         stack       tree_way;
@@ -383,6 +430,7 @@ void mode_definition(Tree_node *const ROOT)
         }
         else
         {
+            draw_akinator     ("angry");
             fprintf_with_voice(stderr, "Этого термина нет в базе. ");
             fprintf           (stderr, "Назови другое имя.\n");
             continue;
@@ -394,6 +442,8 @@ bool Tree_definition_dfs(Tree_node *node, const char *term_to_find, stack *const
 {
     assert(node        );
     assert(term_to_find);
+
+    check_event();
 
     if (node->left == nullptr)
     {
@@ -421,6 +471,8 @@ void print_definition(stack *const tree_way, const char *term)
     assert(tree_way);
     assert(term    );
 
+    check_event();
+
     fprintf(stderr, "%s - ", term);
 
     int size = tree_way->size;
@@ -443,6 +495,9 @@ void mode_compare(Tree_node *const ROOT)
 {
     assert(ROOT);
 
+    check_event();
+
+    draw_akinator     ("banal");
     fprintf_with_voice(stderr, "Назови два имени, а я сравню их определения.\n");
 
     char term1[SIZE_DATA] = "";
@@ -450,6 +505,8 @@ void mode_compare(Tree_node *const ROOT)
 
     while (true)
     {
+        check_event();
+
         get_line_stream(term1, SIZE_DATA, stdin)
         get_line_stream(term2, SIZE_DATA, stdin)
 
@@ -460,12 +517,14 @@ void mode_compare(Tree_node *const ROOT)
 
         if (!Tree_definition_dfs(ROOT, term1, &tree_way1))
         {
+            draw_akinator     ("angry");
             fprintf_with_voice(stderr, "Первого термина нет в базе. ");
             fprintf           (stderr, "Введи другое имя.\n");
             continue;
         }
         if (!Tree_definition_dfs(ROOT, term2, &tree_way2))
         {
+            draw_akinator     ("angry");
             fprintf_with_voice(stderr, "Второго термина нет в базе. ");
             fprintf           (stderr, "Введи другое имя.\n");
             continue;
@@ -487,6 +546,9 @@ void print_compare(stack *const tree_way1, const char *term1, stack *const tree_
     assert(tree_way2);
     assert(term2    );
 
+    check_event  ();
+    draw_akinator("focused");
+
     bool same = false;
 
     int  cnt1 = 0;
@@ -499,6 +561,8 @@ void print_compare(stack *const tree_way1, const char *term1, stack *const tree_
 
     for (; cnt1 < size1 && cnt2 < size2; ++cnt1, ++cnt2)
     {
+        check_event();
+
         trip cur1 = beg1[cnt1];
         trip cur2 = beg2[cnt2];
 
@@ -540,6 +604,8 @@ void print_difference(stack *const tree_way, int cnt, const int size)
 {
     assert(tree_way);
 
+    check_event();
+
     trip *beg = (trip *) tree_way->data;
 
     for (; cnt < size; ++cnt)
@@ -557,18 +623,19 @@ void print_difference(stack *const tree_way, int cnt, const int size)
 
 void save_data(Tree_node *node)
 {
+    check_event();
+
+    draw_akinator     ("banal");
     fprintf_with_voice(stderr, "Введи путь до файла, в который сохранить базу");
     fprintf           (stderr, " (или введи \"-\", чтобы не сохранять её).\n");
-    
-    //>>>>>>>>>>>>>>>>
-    //fprintf(stderr, "return to save_data()\n");
-    //<<<<<<<<<<<<<<<<
 
     char filename[SIZE_DATA] =      "";
     FILE  *stream            = nullptr;
 
     while (true)
     {
+        check_event();
+
         get_word(filename, SIZE_DATA, stdin);
         
 
@@ -576,6 +643,7 @@ void save_data(Tree_node *node)
         {
             clear_input_stream(stdin);
 
+            draw_akinator     ("angry");
             fprintf_with_voice(stderr, "Некорректное имя файла. ");
             fprintf           (stderr, "Введи другое имя.\n");
             continue;
@@ -586,12 +654,15 @@ void save_data(Tree_node *node)
 
         if (stream == nullptr)
         {
+            draw_akinator     ("angry");
             fprintf_with_voice(stderr, "Не могу открыть этот файл(. Введи другое имя.\n");
             continue;
         }
 
         fill_output_file  (node, stream, 0);
         fclose            (      stream   );
+
+        draw_akinator     ("happy");
         fprintf_with_voice(stderr, "Запись произошла успешно. Пока!\n");
         return;
     }  
@@ -601,6 +672,8 @@ void fill_output_file(Tree_node *node, FILE *const stream, int tab_shift)
 {
     assert(node  );
     assert(stream);
+
+    check_event();
 
     tab    (stream, tab_shift);
     fprintf(stream, "{%s", node->data);
@@ -621,6 +694,8 @@ void fill_output_file(Tree_node *node, FILE *const stream, int tab_shift)
 
 ANSWERS yes_no(bool strict)
 {
+    check_event();
+
     char answer[SIZE_ANS] = "";
 
     while (true)
@@ -631,6 +706,7 @@ ANSWERS yes_no(bool strict)
         {
             clear_input_stream(stdin);
 
+            draw_akinator     ("angry");
             fprintf_with_voice(stderr, "Неопределённый ответ. ");
 
             if (!strict) fprintf(stderr, "Скажи одно из: \"да\", \"нет\", \"скорее_да\", \"скорее_нет\".\n");
@@ -644,6 +720,7 @@ ANSWERS yes_no(bool strict)
         if (!strict && !strcasecmp("скорее_да", answer)) return MAYBE_YES;
         if (!strict && !strcasecmp("скорее_нет", answer)) return MAYBE_NO;
 
+        draw_akinator     ("angry");
         fprintf_with_voice(stderr, "Неопределённый ответ. ");
 
         if (!strict) fprintf(stderr, "Скажи одно из: \"да\", \"нет\", \"скорее_да\", \"скорее_нет\".\n");
@@ -655,47 +732,32 @@ ANSWERS yes_no(bool strict)
 
 void tab(FILE *const stream, int n)
 {
+    check_event();
+
     while (n--) putc('\t', stream);
 }
 
 void fprintf_with_voice(FILE *const stream, const char *fmt, ...)
 {
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    //fprintf(stderr, "I am in fprintf_with_voice()\n");
-    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    check_event();
 
     va_list  ap;
     va_start(ap, fmt);
 
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    //fprintf(stderr, "Alreay after va_init\n");
-    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
     char     output [SIZE_DATA] = "";
     vsprintf(output, fmt, ap);
-
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    //fprintf(stderr, "Already after char_init\n");
-    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-
+    
     fprintf(stderr, output); 
     voice  (        output);
-    
-    //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    //fprintf(stderr, "return to fprintf_with_voice()\n");
-    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    
+
     va_end(ap);
 }
 
 void voice(const char *s)
 {
-    //>>>>>>>>>>>>>>>>>>>>>>
-    //fprintf(stderr, "start voice\n");
-    //<<<<<<<<<<<<<<<<<<<<<<
-
     assert(s);
+
+    check_event();
 
     char    cmd     [SIZE_CMD ] = "";
     char    cmd_text[SIZE_DATA] = "";
@@ -712,13 +774,7 @@ void voice(const char *s)
     }
 
     sprintf(cmd,    "echo \"%s\" | festival --tts", cmd_text);
-    //fprintf(stderr, "cmd - %s\n", cmd);
-
     system(cmd);
-
-    //>>>>>>>>>>>>>
-    //fprintf(stderr, "make voice\n");
-    //<<<<<<<<<<<<<
 }
 
 /*_______________________________________________________________________________________________*/
@@ -727,6 +783,8 @@ void Tree_dump(Tree_node *root)
 {
     assert(root);
 
+    check_event();
+    
     static int cur = 0;
 
     char    dump_txt[graph_size_file] = "";
@@ -738,6 +796,7 @@ void Tree_dump(Tree_node *root)
     FILE *stream_txt =  fopen(dump_txt, "w");
     if   (stream_txt == nullptr)
     {
+        draw_akinator     ("angry");
         fprintf_with_voice(stderr, "Не могу открыть текстовый дамп-файл.\n");
         return;
     }
@@ -759,6 +818,7 @@ void Tree_dump(Tree_node *root)
 
     fclose(stream_txt);
 
+    draw_akinator     ("happy");
     fprintf_with_voice(stderr, "Дампинг произошёл успешно. Выбери режим.\n");
 }
 
@@ -822,4 +882,44 @@ void Tree_node_describe(Tree_node *node, int *const node_number, FILE *const str
                                                                                                                                     node->left,
                                                                                                                                                node->right);
     ++*node_number;
+}
+
+/*_______________________________________________________________________________________________*/
+
+void draw_akinator(const char *emotion)
+{
+    check_event();
+
+    if (!wnd.isOpen()) return;
+
+    assert(emotion);
+
+    sf::Texture tx;
+    tx.create(WIDTH, HEIGHT);
+
+    char    file[SIZE_CMD] = {};
+    sprintf(file, "../emotion/%s.png", emotion);
+    tx.loadFromFile(file);
+
+    sf::Sprite sprite(tx);
+    sprite.setPosition(0, 0);
+
+    wnd.draw   (sprite);
+    wnd.display();
+}
+
+void check_event()
+{
+    if (!wnd.isOpen()) return;
+
+    sf::Event event;
+
+    while (wnd.pollEvent(event))
+    {
+        if (event.type == sf::Event::Closed)
+        {
+            wnd.close();
+            break;
+        }
+    }
 }

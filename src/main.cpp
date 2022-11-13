@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <SFML/Graphics.hpp>
 
 #include "../lib/algorithm/algorithm.h"
 
@@ -14,8 +15,17 @@ void mode_help();
 
 /*________________________________________________________________*/
 
+const int HEIGHT = 247;
+const int WIDTH  = 215;
+
+sf::RenderWindow wnd(sf::VideoMode(215, 247), "AKINATOR");
+
+/*________________________________________________________________*/
+
 int main()
 {
+    draw_akinator("banal");
+    
     Tree_node *ROOT = (Tree_node *) calloc(1, sizeof(Tree_node));
    *ROOT = node_default;
 
@@ -25,6 +35,8 @@ int main()
 
     while (true)
     {
+        check_event();
+
         MODE mode = get_mode();
 
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -56,6 +68,8 @@ int main()
 
 MODE get_mode()
 {
+    check_event();
+    
     char mode[SIZE_MODE] = "";
 
     get_word(mode ,SIZE_MODE, stdin);

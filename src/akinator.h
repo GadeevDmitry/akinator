@@ -90,6 +90,9 @@ void        Tree_dump                   (Tree_node *root);
 void        Tree_dump_dfs               (Tree_node *node, int *const node_number, FILE *const stream);
 void        Tree_node_describe          (Tree_node *node, int *const node_number, FILE *const stream);
 
+void        draw_akinator               (const char *emotion);
+void        check_event                 ();
+
 /*_______________________________________________________________________________________________*/
 
 #endif //TREE_BINARY_H
