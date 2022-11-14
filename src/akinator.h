@@ -7,6 +7,10 @@ const int SIZE_DATA =  500;
 const int SIZE_MODE =   50;
 const int SIZE_CMD  = 1000;
 
+extern sf::RenderWindow TheWnd;
+extern const int     HEIGHT;
+extern const int      WIDTH;
+
 struct Tree_node
 {
     char data[SIZE_DATA];

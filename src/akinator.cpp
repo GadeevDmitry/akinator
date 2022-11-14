@@ -20,16 +20,12 @@
         if (!is_empty_input_stream(stream))                                                                                 \
         {                                                                                                                   \
             clear_input_stream(stream);                                                                                     \
-            fprintf_with_voice(stderr, "Сообщение слишком длинное. ");                                                      \
-            fprintf           (stderr, "Введи не более %d символов.\n", SIZE_DATA);                                         \
+            fprintf_with_voice(stderr, "Сообщаю, что твое сообщение слишком длинное! ");                                    \
+            fprintf           (stderr, "Введи не более %d символов!\n", SIZE_DATA);                                         \
             continue;                                                                                                       \
         }
 
 const int SIZE_ANS = 20;
-
-extern sf::RenderWindow wnd;
-const int     HEIGHT = 247;
-const int      WIDTH = 215;
 
 struct trip
 {
@@ -890,7 +886,7 @@ void draw_akinator(const char *emotion)
 {
     check_event();
 
-    if (!wnd.isOpen()) return;
+    if (!TheWnd.isOpen()) return;
 
     assert(emotion);
 
@@ -904,21 +900,21 @@ void draw_akinator(const char *emotion)
     sf::Sprite sprite(tx);
     sprite.setPosition(0, 0);
 
-    wnd.draw   (sprite);
-    wnd.display();
+    TheWnd.draw   (sprite);
+    TheWnd.display();
 }
 
 void check_event()
 {
-    if (!wnd.isOpen()) return;
+    if (!TheWnd.isOpen()) return;
 
     sf::Event event;
 
-    while (wnd.pollEvent(event))
+    while (TheWnd.pollEvent(event))
     {
         if (event.type == sf::Event::Closed)
         {
-            wnd.close();
+            TheWnd.close();
             break;
         }
     }

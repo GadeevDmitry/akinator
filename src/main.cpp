@@ -18,7 +18,7 @@ void mode_help();
 const int HEIGHT = 247;
 const int WIDTH  = 215;
 
-sf::RenderWindow wnd(sf::VideoMode(215, 247), "AKINATOR");
+sf::RenderWindow TheWnd(sf::VideoMode(215, 247), "AKINATOR");
 
 /*________________________________________________________________*/
 
