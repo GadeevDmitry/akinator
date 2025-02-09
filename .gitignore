@@ -1,0 +1,7 @@
+.vscode/
+base/
+dump_*/
+*.o
+*.html
+akinator
+
